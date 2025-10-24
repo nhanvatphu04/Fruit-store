@@ -1,0 +1,214 @@
+/* home.css - Trang chủ Fruit Store */
+main .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+.section-title {
+    color: var(--primary-color);
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin: 2.5rem 0 1.5rem;
+    text-align: center;
+}
+
+.slider {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 280px;
+    gap: 1.5rem;
+    overflow-x: auto;
+    padding: 1rem 0.5rem;
+    scroll-padding: 1rem;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+}
+
+.slider::-webkit-scrollbar {
+    display: none;
+}
+
+.product-card, .combo-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    padding: 1.5rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    scroll-snap-align: start;
+}
+
+.product-card:hover, .combo-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+.product-card img, .combo-card img {
+    width: 180px;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+.product-title {
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin: 0.5rem 0;
+    color: var(--text-color);
+}
+
+.product-link:hover {
+    color: var(--primary-color) !important;
+    transition: color 0.2s ease;
+}
+
+.product-price {
+    color: var(--secondary-color);
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin: 0.5rem 0;
+}
+
+.flash-sale {
+    background: linear-gradient(135deg, var(--secondary-color), #ffb366);
+    color: white;
+    padding: 2rem 1rem;
+    border-radius: 12px;
+    margin: 2rem 0;
+    text-align: center;
+}
+
+.flash-sale-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: var(--secondary-color);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 20px;
+    font-weight: bold;
+    font-size: 1.1rem;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    transform: rotate(5deg);
+    z-index: 1;
+}
+
+.flash-sale-item {
+    position: relative;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    transition: transform 0.3s ease;
+}
+
+.flash-sale-item:hover {
+    transform: translateY(-5px);
+}
+
+.flash-sale-item img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+.original-price {
+    font-size: 0.9rem;
+    color: #666;
+    text-decoration: line-through;
+}
+
+.sale-price {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--secondary-color);
+    margin-left: 8px;
+}
+
+.combo-description {
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin: 10px 0;
+    height: 60px;
+    overflow: hidden;
+}
+
+.back-to-top {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background: var(--primary-color);
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0.8;
+    transition: all 0.3s ease;
+}
+
+.back-to-top:hover {
+    opacity: 1;
+    transform: translateY(-3px);
+}
+
+/* Swiper custom styles for product sliders */
+.swiper {
+    position: relative;
+    width: 100%;
+    padding-bottom: 2rem;
+}
+.swiper-wrapper {
+    display: flex;
+}
+.swiper-slide {
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+    height: auto;
+}
+
+/* Responsive: 2 products per view on desktop, 1 on mobile */
+@media (min-width: 768px) {
+    .swiper-slide {
+        min-width: 50%;
+        max-width: 50%;
+    }
+}
+@media (max-width: 767px) {
+    .swiper-slide {
+        min-width: 100%;
+        max-width: 100%;
+    }
+}
+
+/* Swiper navigation buttons */
+.swiper-button-next, .swiper-button-prev {
+    color: var(--primary-color);
+    background: #fff;
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    width: 40px;
+    height: 40px;
+    top: 40%;
+    transition: background 0.2s, color 0.2s;
+}
+.swiper-button-next:hover, .swiper-button-prev:hover {
+    background: var(--primary-color);
+    color: #fff;
+}
+.swiper-button-next:after, .swiper-button-prev:after {
+    font-size: 1.5rem;
+}
+
+/* Remove default Swiper outline */
+.swiper-button-next, .swiper-button-prev {
+    outline: none;
+    border: none;
+}

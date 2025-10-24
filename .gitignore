@@ -1,0 +1,37 @@
+# Ignore build output
+/build/
+/nbbuild/
+/dist/
+/genfiles.properties
+
+# NetBeans project files
+/nbproject/private/
+
+# Ignore compiled Java classes
+*.class
+
+# Ignore log files
+*.log
+
+# Ignore OS generated files
+.DS_Store
+Thumbs.db
+
+# Ignore IDE files
+*.iml
+.idea/
+*.ipr
+*.iws
+.github/
+.vscode/
+
+# Ignore database files
+*.db
+
+# Ignore user-specific files
+*.swp
+*~
+
+# Ignore assets build output (optional)
+/src/java/assets/css/
+/src/java/assets/images/
