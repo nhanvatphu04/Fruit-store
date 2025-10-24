@@ -94,12 +94,15 @@ public class OrderDAO {
 	// Lấy tất cả đơn hàng
 	public List<Order> getAllOrders() {
 		List<Order> list = new ArrayList<>();
-		String sql = "SELECT * FROM orders ORDER BY order_date DESC";
+		String sql = "SELECT o.*, u.username as user_name FROM orders o " +
+					"INNER JOIN users u ON o.user_id = u.user_id " +
+					"ORDER BY o.order_date DESC";
 		try (Connection conn = DbConnect.getInstance().getConnection();
 			 PreparedStatement ps = conn.prepareStatement(sql)) {
 			ResultSet rs = ps.executeQuery();
 			while (rs.next()) {
 				Order order = mapResultSetToOrder(rs);
+				order.setUserName(rs.getString("user_name"));
 				list.add(order);
 			}
 		} catch (Exception e) {
@@ -117,13 +120,16 @@ public class OrderDAO {
 	// Lấy đơn hàng theo trạng thái
 	public List<Order> getOrdersByStatus(String status) {
 		List<Order> list = new ArrayList<>();
-		String sql = "SELECT * FROM orders WHERE status = ? ORDER BY order_date DESC";
+		String sql = "SELECT o.*, u.username as user_name FROM orders o " +
+					"INNER JOIN users u ON o.user_id = u.user_id " +
+					"WHERE o.status = ? ORDER BY o.order_date DESC";
 		try (Connection conn = DbConnect.getInstance().getConnection();
 			 PreparedStatement ps = conn.prepareStatement(sql)) {
 			ps.setString(1, status);
 			ResultSet rs = ps.executeQuery();
 			while (rs.next()) {
 				Order order = mapResultSetToOrder(rs);
+				order.setUserName(rs.getString("user_name"));
 				list.add(order);
 			}
 		} catch (Exception e) {

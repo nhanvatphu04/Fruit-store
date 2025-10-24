@@ -25,47 +25,77 @@ $(document).ready(function() {
     // View Order Details
     $('.view-order').click(function() {
         const orderId = $(this).data('id');
-        
+
         // Fetch order details
-        $.get(contextPath + '/admin/orders/details/' + orderId, function(order) {
-            // Update modal with order details
-            $('#modalOrderId').text('#' + order.orderId);
-            $('#modalOrderDate').text(order.orderDate);
-            $('#modalOrderStatus').html(`
-                <span class="badge bg-${order.status === 'completed' ? 'success' : 
-                                      order.status === 'pending' ? 'warning' : 'danger'}">
-                    ${order.status}
-                </span>
-            `);
-            
-            // Update customer info
-            $('#modalCustomerName').text(order.customerName);
-            $('#modalCustomerEmail').text(order.customerEmail);
-            $('#modalCustomerPhone').text(order.customerPhone);
-            
-            // Update order items
-            let itemsHtml = '';
-            let total = 0;
-            
-            order.items.forEach(item => {
-                const subtotal = item.price * item.quantity;
-                total += subtotal;
-                
-                itemsHtml += `
-                    <tr>
-                        <td>${item.productName}</td>
-                        <td>$${item.price}</td>
-                        <td>${item.quantity}</td>
-                        <td>$${subtotal}</td>
-                    </tr>
-                `;
-            });
-            
-            $('#modalOrderItems').html(itemsHtml);
-            $('#modalOrderTotal').text('$' + total);
-            
-            // Show modal
-            $('#viewOrderModal').modal('show');
+        $.ajax({
+            url: contextPath + '/admin/orders/details/' + orderId,
+            type: 'GET',
+            dataType: 'json',
+            success: function(order) {
+                console.log('Order data:', order); // Debug log
+
+                // Check if order data is valid
+                if (!order || !order.orderId) {
+                    Swal.fire('Error', 'Invalid order data received', 'error');
+                    return;
+                }
+
+                // Update modal with order details
+                $('#modalOrderId').text('#' + order.orderId);
+                $('#modalOrderDate').text(order.orderDate);
+                $('#modalOrderStatus').html(`
+                    <span class="badge bg-${order.status === 'completed' ? 'success' :
+                                          order.status === 'pending' ? 'warning' : 'danger'}">
+                        ${order.status}
+                    </span>
+                `);
+
+                // Update customer info - use correct field names from User model
+                const customerName = order.customer && (order.customer.fullName || order.customer.username) ?
+                                    (order.customer.fullName || order.customer.username) : 'N/A';
+                const customerEmail = order.customer && order.customer.email ? order.customer.email : 'N/A';
+                const customerPhone = order.customer && order.customer.phone ? order.customer.phone : 'N/A';
+
+                $('#modalCustomerName').text(customerName);
+                $('#modalCustomerEmail').text(customerEmail);
+                $('#modalCustomerPhone').text(customerPhone);
+
+                // Update order items
+                let itemsHtml = '';
+                let total = 0;
+
+                // Check if items exist and is an array
+                if (order.items && Array.isArray(order.items) && order.items.length > 0) {
+                    order.items.forEach(item => {
+                        const subtotal = item.price * item.quantity;
+                        total += subtotal;
+
+                        const productName = item.product && item.product.name ? item.product.name : 'Unknown Product';
+
+                        itemsHtml += `
+                            <tr>
+                                <td>${productName}</td>
+                                <td>₫${parseFloat(item.price).toLocaleString('vi-VN')}</td>
+                                <td>${item.quantity}</td>
+                                <td>₫${parseFloat(subtotal).toLocaleString('vi-VN')}</td>
+                            </tr>
+                        `;
+                    });
+                } else {
+                    itemsHtml = '<tr><td colspan="4" class="text-center">No items found</td></tr>';
+                }
+
+                $('#modalOrderItems').html(itemsHtml);
+                $('#modalOrderTotal').text('₫' + parseFloat(total).toLocaleString('vi-VN'));
+
+                // Show modal
+                $('#viewOrderModal').modal('show');
+            },
+            error: function(xhr, status, error) {
+                console.error('Error loading order details:', error);
+                console.error('Response:', xhr.responseText);
+                Swal.fire('Error', 'Failed to load order details: ' + error, 'error');
+            }
         });
     });
 
