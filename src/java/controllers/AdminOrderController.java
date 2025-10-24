@@ -3,7 +3,6 @@ package controllers;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import dao.OrderDAO;
-import dao.OrderItemDAO;
 import dao.ProductDAO;
 import dao.UserDAO;
 import jakarta.servlet.ServletException;
@@ -12,6 +11,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,7 +29,6 @@ import models.User;
 })
 public class AdminOrderController extends HttpServlet {
     private final OrderDAO orderDAO = new OrderDAO();
-    private final OrderItemDAO orderItemDAO = new OrderItemDAO();
     private final UserDAO userDAO = new UserDAO();
     private final ProductDAO productDAO = new ProductDAO();
     private final Gson gson = new GsonBuilder()
@@ -45,10 +44,13 @@ public class AdminOrderController extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/jsp/error/403.jsp");
             return;
         }
-        
+
         String path = request.getServletPath();
+        String pathInfo = request.getPathInfo();
+        System.out.println("DEBUG: ServletPath=" + path + ", PathInfo=" + pathInfo);
         
         if (path.equals("/admin/orders")) {
+            System.out.println("DEBUG: Handling /admin/orders");
             // Hiển thị trang quản lý đơn hàng
             List<Order> orders = orderDAO.getAllOrders();
 
@@ -63,65 +65,161 @@ public class AdminOrderController extends HttpServlet {
             request.getRequestDispatcher("/jsp/admin/orders.jsp").forward(request, response);
         }
         else if (path.equals("/admin/orders/by-status")) {
+            System.out.println("DEBUG: Handling /admin/orders/by-status");
             // API lấy đơn hàng theo trạng thái
             String status = request.getParameter("status");
-            List<Order> orders = status != null && !status.isEmpty() ? 
+            List<Order> orders = status != null && !status.isEmpty() ?
                                orderDAO.getOrdersByStatus(status) :
                                orderDAO.getAllOrders();
-                               
+
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
             response.getWriter().write(gson.toJson(orders));
         }
-        else if (path.startsWith("/admin/orders/details/")) {
+        else if (path.startsWith("/admin/orders/details")) {
+            System.out.println("DEBUG: Handling /admin/orders/details");
             // API lấy chi tiết đơn hàng
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+
             try {
-                int orderId = Integer.parseInt(path.substring(path.lastIndexOf('/') + 1));
-                Order order = orderDAO.getOrderById(orderId);
+                System.out.println("Processing order details request for path: " + path);
+                System.out.println("PathInfo: " + pathInfo);
+
+                // Extract order ID from pathInfo (e.g., "/1" from "/admin/orders/details/1")
+                int orderId;
+                if (pathInfo != null && !pathInfo.isEmpty() && !pathInfo.equals("/")) {
+                    orderId = Integer.parseInt(pathInfo.substring(1)); // Remove leading "/"
+                } else {
+                    // Fallback: try to extract from path
+                    orderId = Integer.parseInt(path.substring(path.lastIndexOf('/') + 1));
+                }
+                System.out.println("Parsed order ID: " + orderId);
                 
+                Order order = orderDAO.getOrderById(orderId);
+                System.out.println("Order retrieved: " + (order != null ? "Yes (ID: " + order.getOrderId() + ")" : "No (null)"));
+
                 if (order != null) {
                     // Lấy thông tin người dùng
                     User user = userDAO.getUserById(order.getUserId());
-                    
+                    System.out.println("User retrieved: " + (user != null ? "Yes (ID: " + user.getUserId() + ")" : "No (null)"));
+
                     // Lấy danh sách sản phẩm trong đơn hàng
-                    List<OrderItem> items = orderItemDAO.getOrderItems(orderId);
-                    
+                    List<OrderItem> items = order.getOrderItems();
+                    if (items == null) {
+                        items = new ArrayList<>();
+                    }
+                    System.out.println("Order items count: " + items.size());
+
                     // Lấy thông tin sản phẩm cho mỗi item
                     for (OrderItem item : items) {
-                        Product product = productDAO.getProductById(item.getProductId());
-                        if (product != null) {
-                            Map<String, Object> productInfo = new HashMap<>();
-                            productInfo.put("name", product.getName());
-                            productInfo.put("image", product.getImageUrl());
+                        try {
+                            Product product = productDAO.getProductById(item.getProductId());
                             item.setProduct(product);
+                            System.out.println("Loaded product for item: " + item.getProductId() + 
+                                             " - " + (product != null ? product.getName() : "null"));
+                        } catch (Exception e) {
+                            System.err.println("Error loading product " + item.getProductId() + ": " + e.getMessage());
+                            e.printStackTrace();
                         }
                     }
-                    
-                    // Tạo response object
+
+                    // Tạo response object với items được serialize đúng cách
                     Map<String, Object> orderDetails = new HashMap<>();
                     orderDetails.put("orderId", order.getOrderId());
-                    orderDetails.put("orderDate", order.getOrderDate());
-                    orderDetails.put("totalAmount", order.getTotalAmount());
-                    orderDetails.put("status", order.getStatus());
-                    orderDetails.put("customer", user);
-                    orderDetails.put("items", items);
+                    orderDetails.put("orderDate", order.getOrderDate() != null ? order.getOrderDate().toString() : "");
+                    orderDetails.put("totalAmount", order.getTotalAmount() != null ? order.getTotalAmount().toString() : "0");
+                    orderDetails.put("status", order.getStatus() != null ? order.getStatus() : "unknown");
                     
+                    // Tạo customer map để đảm bảo serialization đúng
+                    Map<String, Object> customerMap = new HashMap<>();
+                    if (user != null) {
+                        customerMap.put("userId", user.getUserId());
+                        customerMap.put("username", user.getUsername() != null ? user.getUsername() : "");
+                        customerMap.put("fullName", user.getFullName() != null ? user.getFullName() : "");
+                        customerMap.put("email", user.getEmail() != null ? user.getEmail() : "");
+                        customerMap.put("phone", user.getPhone() != null ? user.getPhone() : "");
+                    }
+                    orderDetails.put("customer", customerMap);
+
+                    // Tạo danh sách items với thông tin sản phẩm
+                    List<Map<String, Object>> itemsList = new ArrayList<>();
+                    for (OrderItem item : items) {
+                        Map<String, Object> itemMap = new HashMap<>();
+                        itemMap.put("orderItemId", item.getOrderItemId());
+                        itemMap.put("orderId", item.getOrderId());
+                        itemMap.put("productId", item.getProductId());
+                        itemMap.put("quantity", item.getQuantity());
+                        itemMap.put("price", item.getPrice() != null ? item.getPrice().toString() : "0");
+
+                        // Thêm thông tin sản phẩm
+                        if (item.getProduct() != null) {
+                            Map<String, Object> productMap = new HashMap<>();
+                            productMap.put("productId", item.getProduct().getProductId());
+                            productMap.put("name", item.getProduct().getName() != null ? item.getProduct().getName() : "Unknown Product");
+                            productMap.put("imageUrl", item.getProduct().getImageUrl() != null ? item.getProduct().getImageUrl() : "");
+                            itemMap.put("product", productMap);
+                        } else {
+                            // Đảm bảo có product object ngay cả khi null
+                            Map<String, Object> productMap = new HashMap<>();
+                            productMap.put("name", "Unknown Product");
+                            itemMap.put("product", productMap);
+                        }
+                        itemsList.add(itemMap);
+                    }
+                    orderDetails.put("items", itemsList);
+
                     // Gửi response dạng JSON
-                    response.setContentType("application/json");
-                    response.setCharacterEncoding("UTF-8");
-                    response.getWriter().write(gson.toJson(orderDetails));
+                    String jsonResponse = gson.toJson(orderDetails);
+                    System.out.println("Order details JSON length: " + jsonResponse.length());
+                    System.out.println("Order details response: " + jsonResponse);
+                    try (java.io.PrintWriter out = response.getWriter()) {
+                        out.write(jsonResponse);
+                        out.flush();
+                        System.out.println("Response written and flushed successfully");
+                    }
                 } else {
+                    System.out.println("Order not found, returning 404");
                     response.setStatus(HttpServletResponse.SC_NOT_FOUND);
                     Map<String, String> error = new HashMap<>();
                     error.put("message", "Order not found");
-                    response.getWriter().write(gson.toJson(error));
+                    String errorJson = gson.toJson(error);
+                    try (java.io.PrintWriter out = response.getWriter()) {
+                        out.write(errorJson);
+                        out.flush();
+                    }
                 }
             } catch (NumberFormatException e) {
+                System.err.println("Invalid order ID format: " + e.getMessage());
+                e.printStackTrace();
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 Map<String, String> error = new HashMap<>();
                 error.put("message", "Invalid order ID");
-                response.getWriter().write(gson.toJson(error));
+                try (java.io.PrintWriter out = response.getWriter()) {
+                    out.write(gson.toJson(error));
+                    out.flush();
+                }
+            } catch (Exception e) {
+                System.err.println("Unexpected error in order details: " + e.getMessage());
+                e.printStackTrace();
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                Map<String, String> error = new HashMap<>();
+                error.put("message", "Internal server error: " + e.getMessage());
+                try (java.io.PrintWriter out = response.getWriter()) {
+                    out.write(gson.toJson(error));
+                    out.flush();
+                }
             }
+        }
+        else {
+            // Unmatched path
+            System.out.println("Unmatched path in doGet: " + path);
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            Map<String, String> error = new HashMap<>();
+            error.put("message", "Endpoint not found");
+            response.getWriter().write(gson.toJson(error));
         }
     }
 

@@ -25,36 +25,41 @@ $(document).ready(function() {
     // View Order Details
     $('.view-order').click(function() {
         const orderId = $(this).data('id');
+        
 
         // Fetch order details
         $.ajax({
             url: contextPath + '/admin/orders/details/' + orderId,
             type: 'GET',
             dataType: 'json',
-            success: function(order) {
-                console.log('Order data:', order); // Debug log
+            success: function(response) {
 
-                // Check if order data is valid
-                if (!order || !order.orderId) {
+                // Check if response data is valid
+                if (!response || typeof response !== 'object') {
+                    Swal.fire('Error', 'Invalid response format', 'error');
+                    return;
+                }
+
+                if (!response.orderId) {
                     Swal.fire('Error', 'Invalid order data received', 'error');
                     return;
                 }
 
                 // Update modal with order details
-                $('#modalOrderId').text('#' + order.orderId);
-                $('#modalOrderDate').text(order.orderDate);
+                $('#modalOrderId').text('#' + response.orderId);
+                $('#modalOrderDate').text(response.orderDate || 'N/A');
                 $('#modalOrderStatus').html(`
-                    <span class="badge bg-${order.status === 'completed' ? 'success' :
-                                          order.status === 'pending' ? 'warning' : 'danger'}">
-                        ${order.status}
+                    <span class="badge bg-${response.status === 'completed' ? 'success' :
+                                          response.status === 'pending' ? 'warning' : 'danger'}">
+                        ${response.status || 'Unknown'}
                     </span>
                 `);
 
-                // Update customer info - use correct field names from User model
-                const customerName = order.customer && (order.customer.fullName || order.customer.username) ?
-                                    (order.customer.fullName || order.customer.username) : 'N/A';
-                const customerEmail = order.customer && order.customer.email ? order.customer.email : 'N/A';
-                const customerPhone = order.customer && order.customer.phone ? order.customer.phone : 'N/A';
+                // Update customer info
+                const customer = response.customer || {};
+                const customerName = customer.fullName || customer.username || 'N/A';
+                const customerEmail = customer.email || 'N/A';
+                const customerPhone = customer.phone || 'N/A';
 
                 $('#modalCustomerName').text(customerName);
                 $('#modalCustomerEmail').text(customerEmail);
@@ -65,19 +70,21 @@ $(document).ready(function() {
                 let total = 0;
 
                 // Check if items exist and is an array
-                if (order.items && Array.isArray(order.items) && order.items.length > 0) {
-                    order.items.forEach(item => {
-                        const subtotal = item.price * item.quantity;
+                if (response.items && Array.isArray(response.items) && response.items.length > 0) {
+                    response.items.forEach(item => {
+                        const price = parseFloat(item.price) || 0;
+                        const quantity = parseInt(item.quantity) || 0;
+                        const subtotal = price * quantity;
                         total += subtotal;
 
-                        const productName = item.product && item.product.name ? item.product.name : 'Unknown Product';
+                        const productName = (item.product && item.product.name) ? item.product.name : 'Unknown Product';
 
                         itemsHtml += `
                             <tr>
                                 <td>${productName}</td>
-                                <td>₫${parseFloat(item.price).toLocaleString('vi-VN')}</td>
-                                <td>${item.quantity}</td>
-                                <td>₫${parseFloat(subtotal).toLocaleString('vi-VN')}</td>
+                                <td>₫${price.toLocaleString('vi-VN')}</td>
+                                <td>${quantity}</td>
+                                <td>₫${subtotal.toLocaleString('vi-VN')}</td>
                             </tr>
                         `;
                     });
@@ -86,15 +93,24 @@ $(document).ready(function() {
                 }
 
                 $('#modalOrderItems').html(itemsHtml);
-                $('#modalOrderTotal').text('₫' + parseFloat(total).toLocaleString('vi-VN'));
+                $('#modalOrderTotal').text('₫' + total.toLocaleString('vi-VN'));
 
                 // Show modal
                 $('#viewOrderModal').modal('show');
             },
             error: function(xhr, status, error) {
-                console.error('Error loading order details:', error);
-                console.error('Response:', xhr.responseText);
-                Swal.fire('Error', 'Failed to load order details: ' + error, 'error');
+                
+                let errorMessage = 'Failed to load order details';
+                
+                try {
+                    const errorResponse = JSON.parse(xhr.responseText);
+                    if (errorResponse.message) {
+                        errorMessage = errorResponse.message;
+                    }
+                } catch (e) {
+                }
+                
+                Swal.fire('Error', errorMessage, 'error');
             }
         });
     });

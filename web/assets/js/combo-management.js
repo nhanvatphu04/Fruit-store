@@ -157,7 +157,6 @@ function saveCombo() {
         }
     })
     .catch(error => {
-        console.error('Error:', error);
         showError('Failed to save combo');
     });
 }
@@ -197,7 +196,6 @@ function deleteCombo(id) {
                 }
             })
             .catch(error => {
-                console.error('Error:', error);
                 showError('Failed to delete combo');
             });
         }
@@ -227,11 +225,23 @@ function loadComboItems(comboId) {
         .then(items => {
             const tbody = document.getElementById('comboItemsList');
             tbody.innerHTML = '';
+            
+            // Check if items is valid and is an array
+            if (!items || !Array.isArray(items)) {
+                tbody.innerHTML = '<tr><td colspan="3" class="text-center">No items found</td></tr>';
+                return;
+            }
+            
+            if (items.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="3" class="text-center">No items in this combo</td></tr>';
+                return;
+            }
+            
             items.forEach(item => {
                 const row = `
                     <tr>
-                        <td>${item.productName}</td>
-                        <td>${item.quantity}</td>
+                        <td>${item.productName || 'Unknown Product'}</td>
+                        <td>${item.quantity || 0}</td>
                         <td>
                             <button type="button" class="btn btn-sm btn-danger" onclick="removeComboItem(${item.comboItemId})">
                                 <i class="fas fa-trash"></i>
@@ -243,8 +253,6 @@ function loadComboItems(comboId) {
             });
         })
         .catch(error => {
-            console.error('Error:', error);
-            console.error('Stack:', error.stack);
             showError(`Failed to load combo items: ${error.message}`);
         });
 }
@@ -266,7 +274,6 @@ function addComboItem() {
         }
     })
     .catch(error => {
-        console.error('Error:', error);
         showError('Failed to add combo item');
     });
 }
@@ -290,7 +297,6 @@ function removeComboItem(comboItemId) {
         }
     })
     .catch(error => {
-        console.error('Error:', error);
         showError('Failed to remove combo item');
     });
 }
@@ -324,7 +330,6 @@ function formatDateForServer(dateString) {
         // Đổi từ 'YYYY-MM-DDTHH:mm' thành 'YYYY-MM-DD HH:mm:ss'
         return dateString.replace('T', ' ') + ':00';
     } catch (error) {
-        console.error('Error formatting date for server:', error);
         return null;
     }
 }
