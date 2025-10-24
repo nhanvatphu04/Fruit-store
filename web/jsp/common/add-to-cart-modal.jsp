@@ -88,7 +88,6 @@ function showAddToCartModal(productId, productName, productPrice, stockQuantity,
         if (result.isConfirmed) {
             const quantity = document.getElementById('quantity').value;
             // Gửi request thêm vào giỏ hàng
-            console.log('Sending AJAX request:', {productId, quantity});
             $.ajax({
                 url: '${pageContext.request.contextPath}/cart/add',
                 type: 'POST',

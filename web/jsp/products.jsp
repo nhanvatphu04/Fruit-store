@@ -289,31 +289,20 @@
                 $("#clearPriceFilter").show();
             }
 
-            // Debug helper (mở console để kiểm tra)
-            function dbg() {
-                console.log("location.origin:", window.location.origin);
-                console.log("location.pathname:", window.location.pathname);
-                console.log("location.href:", window.location.href);
-                console.log("document.baseURI:", document.baseURI);
-            }
-
             // Clear price filter
             $("#clearPriceFilter").on("click", function(e) {
                 e.preventDefault();
-                dbg();
                 const searchParams = new URLSearchParams(window.location.search);
                 searchParams.delete('min_price');
                 searchParams.delete('max_price');
                 const base = window.location.origin + window.location.pathname;
                 const newUrl = base + (searchParams.toString() ? "?" + searchParams.toString() : "");
-                console.log("redirect ->", newUrl);
                 window.location.href = newUrl;
             });
 
             // Apply price filter
             $("#filterPriceBtn").on("click", function(e) {
                 e.preventDefault();
-                dbg();
                 const currentMinPrice = $("#price-slider").slider("values", 0);
                 const currentMaxPrice = $("#price-slider").slider("values", 1);
                 const searchParams = new URLSearchParams(window.location.search);
@@ -321,7 +310,6 @@
                 searchParams.set('max_price', currentMaxPrice);
                 const base = window.location.origin + window.location.pathname;
                 const newUrl = base + "?" + searchParams.toString();
-                console.log("redirect ->", newUrl);
                 window.location.href = newUrl;
             });
 

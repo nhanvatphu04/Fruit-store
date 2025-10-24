@@ -255,9 +255,7 @@
     <script src="${pageContext.request.contextPath}/assets/js/home.js"></script>
     <script>
         // Add to cart function for product cards
-        function addToCart(productId, name, price, stockQuantity, originalPrice = null, discountPercent = 0) {
-            console.log('addToCart called with:', {productId, name, price, stockQuantity, originalPrice, discountPercent});
-            
+        function addToCart(productId, name, price, stockQuantity, originalPrice = null, discountPercent = 0) {           
             // Validate productId
             if (!productId || productId === 'null' || productId === '') {
                 Swal.fire({

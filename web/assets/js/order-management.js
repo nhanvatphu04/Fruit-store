@@ -23,9 +23,19 @@ $(document).ready(function() {
     });
 
     // View Order Details
-    $('.view-order').click(function() {
+    $(document).on('click', '.view-order', function() {
         const orderId = $(this).data('id');
-        
+        console.log('View order clicked for ID:', orderId);
+
+        // Clear previous modal data
+        $('#modalOrderId').text('');
+        $('#modalOrderDate').text('');
+        $('#modalOrderStatus').html('');
+        $('#modalCustomerName').text('');
+        $('#modalCustomerEmail').text('');
+        $('#modalCustomerPhone').text('');
+        $('#modalOrderItems').html('');
+        $('#modalOrderTotal').text('');
 
         // Fetch order details
         $.ajax({
@@ -33,14 +43,17 @@ $(document).ready(function() {
             type: 'GET',
             dataType: 'json',
             success: function(response) {
+                console.log('Order details response:', response);
 
                 // Check if response data is valid
                 if (!response || typeof response !== 'object') {
+                    console.error('Invalid response format');
                     Swal.fire('Error', 'Invalid response format', 'error');
                     return;
                 }
 
                 if (!response.orderId) {
+                    console.error('Invalid order data received');
                     Swal.fire('Error', 'Invalid order data received', 'error');
                     return;
                 }
@@ -69,6 +82,8 @@ $(document).ready(function() {
                 let itemsHtml = '';
                 let total = 0;
 
+                console.log('Items array:', response.items);
+
                 // Check if items exist and is an array
                 if (response.items && Array.isArray(response.items) && response.items.length > 0) {
                     response.items.forEach(item => {
@@ -78,6 +93,8 @@ $(document).ready(function() {
                         total += subtotal;
 
                         const productName = (item.product && item.product.name) ? item.product.name : 'Unknown Product';
+
+                        console.log('Adding item:', productName, 'Price:', price, 'Qty:', quantity);
 
                         itemsHtml += `
                             <tr>
@@ -89,27 +106,39 @@ $(document).ready(function() {
                         `;
                     });
                 } else {
+                    console.log('No items found in response');
                     itemsHtml = '<tr><td colspan="4" class="text-center">No items found</td></tr>';
                 }
 
+                console.log('Items HTML:', itemsHtml);
+                console.log('Total amount:', total);
+
+                // Set the items HTML
                 $('#modalOrderItems').html(itemsHtml);
+
+                // Set the total with proper formatting
                 $('#modalOrderTotal').text('₫' + total.toLocaleString('vi-VN'));
 
                 // Show modal
-                $('#viewOrderModal').modal('show');
+                console.log('Showing modal');
+                const modal = new bootstrap.Modal(document.getElementById('viewOrderModal'));
+                modal.show();
             },
             error: function(xhr, status, error) {
-                
+                console.error('AJAX error:', status, error);
+                console.error('Response text:', xhr.responseText);
+
                 let errorMessage = 'Failed to load order details';
-                
+
                 try {
                     const errorResponse = JSON.parse(xhr.responseText);
                     if (errorResponse.message) {
                         errorMessage = errorResponse.message;
                     }
                 } catch (e) {
+                    console.error('Error parsing error response:', e);
                 }
-                
+
                 Swal.fire('Error', errorMessage, 'error');
             }
         });

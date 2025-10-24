@@ -213,15 +213,12 @@
             function openUserModal(userId) {
                 if (!userId) return;
                 
-                console.log('Fetching user data for ID:', userId);
-                
                 // Load user data
                 $.ajax({
                     url: '${pageContext.request.contextPath}/admin/users/get/' + userId,
                     type: 'GET',
                     dataType: 'json',
                     success: function(response) {
-                        console.log('Received user data:', response);
                         if (response.success === false) {
                             Swal.fire({
                                 icon: 'error',
@@ -266,8 +263,6 @@
             function saveUser() {
                 const userId = $('#userId').val();
                 const role = $('#role').val();
-                
-                console.log('Updating role for user:', userId, 'to:', role);
                 
                 $.ajax({
                     url: '${pageContext.request.contextPath}/admin/users/update-role',

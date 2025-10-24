@@ -221,7 +221,6 @@
                     $(this).addClass('selected');
                     
                     const avatarPath = $(this).data('avatar');
-                    console.log('Setting avatar path:', avatarPath);
                     $('#selectedAvatar').val(avatarPath);
                     $('#avatarPreview').attr('src', '${pageContext.request.contextPath}' + avatarPath);
                     $('#avatarModal').modal('hide');

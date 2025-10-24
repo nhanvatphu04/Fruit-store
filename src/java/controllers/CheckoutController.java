@@ -192,7 +192,8 @@ public class CheckoutController extends HttpServlet {
                     orderItem.setOrderId(orderId);
                     orderItem.setProductId(product.getProductId());
                     orderItem.setQuantity(item.getQuantity());
-                    orderItem.setPrice(product.getPrice());
+                    // Use the discounted price that the user actually paid, not the current product price
+                    orderItem.setPrice(item.getDiscountedPrice());
 
                     if (!orderItemDAO.addOrderItem(orderItem)) {
                         throw new Exception("Không thể thêm sản phẩm vào đơn hàng");

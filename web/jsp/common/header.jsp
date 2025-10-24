@@ -186,7 +186,6 @@
                     },
                     error: function() {
                         $('.cart-count').text('0').hide();
-                        console.log('Lỗi khi cập nhật số lượng giỏ hàng');
                     }
                 });
             }

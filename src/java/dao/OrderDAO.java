@@ -179,13 +179,18 @@ public class OrderDAO {
 		ProductDAO productDAO = new ProductDAO();
 		List<OrderItem> orderItems = orderItemDAO.getOrderItems(order.getOrderId());
 
+		System.out.println("DEBUG: Loading order items for order " + order.getOrderId() + ", found " + orderItems.size() + " items");
+
 		// Load product details for each order item
 		for (OrderItem item : orderItems) {
+			System.out.println("DEBUG: Loading product for item " + item.getOrderItemId() + ", productId=" + item.getProductId());
 			Product product = productDAO.getProductById(item.getProductId());
 			item.setProduct(product);
+			System.out.println("DEBUG: Product loaded: " + (product != null ? product.getName() : "null"));
 		}
 
 		order.setOrderItems(orderItems);
+		System.out.println("DEBUG: Order items set, total items: " + order.getOrderItems().size());
 	}
 
 	// Lấy tổng số đơn hàng
