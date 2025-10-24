@@ -28,7 +28,8 @@ import services.ProductService;
     "/cart/totals",
     "/cart/count",
     "/cart/remove-combo",
-    "/cart/select-combo"
+    "/cart/select-combo",
+    "/cart/update-combo"
 })
 public class CartController extends HttpServlet {
     private CartService cartService;
@@ -86,6 +87,9 @@ public class CartController extends HttpServlet {
                 break;
             case "/cart/select-combo":
                 selectCartCombo(request, response);
+                break;
+            case "/cart/update-combo":
+                updateCartCombo(request, response);
                 break;
             default:
                 response.sendError(HttpServletResponse.SC_NOT_FOUND);
@@ -382,5 +386,33 @@ public class CartController extends HttpServlet {
         }
         
         response.getWriter().write(gson.toJson(jsonResponse));
+    }
+
+    // Cập nhật số lượng combo trong giỏ
+    private void updateCartCombo(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        response.setContentType("application/json");
+        PrintWriter out = response.getWriter();
+        Map<String, Object> result = new HashMap<>();
+
+        try {
+            int cartComboId = Integer.parseInt(request.getParameter("cartComboId"));
+            int quantity = Integer.parseInt(request.getParameter("quantity"));
+
+            if (quantity < 1) {
+                result.put("success", false);
+                result.put("message", "Số lượng phải lớn hơn 0");
+            } else {
+                boolean success = cartService.updateCartComboQuantity(cartComboId, quantity);
+                result.put("success", success);
+                result.put("message", success ? "Đã cập nhật giỏ hàng" : "Không thể cập nhật giỏ hàng");
+            }
+
+        } catch (NumberFormatException e) {
+            result.put("success", false);
+            result.put("message", "Dữ liệu không hợp lệ");
+        }
+
+        out.print(gson.toJson(result));
     }
 }

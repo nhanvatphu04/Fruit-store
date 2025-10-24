@@ -199,4 +199,12 @@ public class CartService {
     public boolean removeCartCombo(int cartComboId) {
         return cartComboDAO.removeCartComboItem(cartComboId);
     }
+
+    // Cập nhật số lượng combo trong giỏ
+    public boolean updateCartComboQuantity(int cartComboId, int quantity) {
+        if (quantity <= 0) {
+            return false;
+        }
+        return cartComboDAO.updateCartComboItem(cartComboId, quantity);
+    }
 }

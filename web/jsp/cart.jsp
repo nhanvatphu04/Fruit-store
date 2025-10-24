@@ -118,11 +118,24 @@
                             <!-- Số lượng -->
                             <div class="col-3">
                                 <div class="input-group">
-                                    <span class="form-control quantity-display text-center" 
+                                    <button class="btn btn-outline-secondary btn-sm decrease-qty"
+                                            data-cart-id="${item.cartId}" title="Giảm số lượng">
+                                        <i class="fas fa-minus"></i>
+                                    </button>
+                                    <span class="form-control quantity-display text-center"
                                           style="background-color: #f8f9fa; border: 1px solid #dee2e6;">
                                         ${item.quantity}
                                     </span>
+                                    <button class="btn btn-outline-secondary btn-sm increase-qty"
+                                            data-cart-id="${item.cartId}"
+                                            data-stock="${item.product.stockQuantity}"
+                                            title="Tăng số lượng">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
                                 </div>
+                                <small class="text-muted d-block mt-1">
+                                    Kho: <span class="stock-info">${item.product.stockQuantity}</span>
+                                </small>
                             </div>
                             <!-- Nút xoá -->
                             <div class="col-2">
@@ -167,10 +180,22 @@
                                 <!-- Số lượng -->
                                 <div class="col-3">
                                     <div class="input-group">
+                                        <button class="btn btn-outline-secondary btn-sm decrease-combo-qty"
+                                                data-cart-combo-id="${combo.cartComboId}" title="Giảm số lượng">
+                                            <i class="fas fa-minus"></i>
+                                        </button>
                                         <span class="form-control quantity-display text-center">
                                             ${combo.quantity}
                                         </span>
+                                        <button class="btn btn-outline-secondary btn-sm increase-combo-qty"
+                                                data-cart-combo-id="${combo.cartComboId}"
+                                                title="Tăng số lượng">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
                                     </div>
+                                    <small class="text-muted d-block mt-1">
+                                        Kho: <span class="stock-info">Không giới hạn</span>
+                                    </small>
                                 </div>
                                 <!-- Nút xoá -->
                                 <div class="col-2">
@@ -238,7 +263,93 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         $(document).ready(function() {
-            // Quantity update functionality has been disabled
+            // Tăng số lượng sản phẩm
+            $('.increase-qty').click(function() {
+                let cartId = $(this).data('cart-id');
+                let stock = $(this).data('stock');
+                let currentQty = parseInt($(this).siblings('.quantity-display').text());
+
+                if (currentQty < stock) {
+                    updateQuantity(cartId, currentQty + 1);
+                } else {
+                    Swal.fire('Thông báo', 'Số lượng không được vượt quá kho hàng', 'warning');
+                }
+            });
+
+            // Giảm số lượng sản phẩm
+            $('.decrease-qty').click(function() {
+                let cartId = $(this).data('cart-id');
+                let currentQty = parseInt($(this).siblings('.quantity-display').text());
+
+                if (currentQty > 1) {
+                    updateQuantity(cartId, currentQty - 1);
+                } else {
+                    Swal.fire('Thông báo', 'Số lượng phải lớn hơn 0', 'warning');
+                }
+            });
+
+            // Tăng số lượng combo
+            $('.increase-combo-qty').click(function() {
+                let cartComboId = $(this).data('cart-combo-id');
+                let currentQty = parseInt($(this).siblings('.quantity-display').text());
+                updateComboQuantity(cartComboId, currentQty + 1);
+            });
+
+            // Giảm số lượng combo
+            $('.decrease-combo-qty').click(function() {
+                let cartComboId = $(this).data('cart-combo-id');
+                let currentQty = parseInt($(this).siblings('.quantity-display').text());
+
+                if (currentQty > 1) {
+                    updateComboQuantity(cartComboId, currentQty - 1);
+                } else {
+                    Swal.fire('Thông báo', 'Số lượng phải lớn hơn 0', 'warning');
+                }
+            });
+
+            // Hàm cập nhật số lượng sản phẩm
+            function updateQuantity(cartId, newQuantity) {
+                $.ajax({
+                    url: '${pageContext.request.contextPath}/cart/update',
+                    method: 'POST',
+                    data: {
+                        cartId: cartId,
+                        quantity: newQuantity
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            location.reload();
+                        } else {
+                            Swal.fire('Lỗi', response.message || 'Không thể cập nhật số lượng', 'error');
+                        }
+                    },
+                    error: function() {
+                        Swal.fire('Lỗi', 'Không thể cập nhật số lượng', 'error');
+                    }
+                });
+            }
+
+            // Hàm cập nhật số lượng combo
+            function updateComboQuantity(cartComboId, newQuantity) {
+                $.ajax({
+                    url: '${pageContext.request.contextPath}/cart/update-combo',
+                    method: 'POST',
+                    data: {
+                        cartComboId: cartComboId,
+                        quantity: newQuantity
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            location.reload();
+                        } else {
+                            Swal.fire('Lỗi', response.message || 'Không thể cập nhật số lượng combo', 'error');
+                        }
+                    },
+                    error: function() {
+                        Swal.fire('Lỗi', 'Không thể cập nhật số lượng combo', 'error');
+                    }
+                });
+            }
 
             // Xoá combo
             $('.remove-combo').click(function() {
