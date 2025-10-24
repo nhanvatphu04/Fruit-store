@@ -117,9 +117,9 @@
                         <div class="order-item">
                             <div class="row align-items-center">
                                 <div class="col-2">
-                                    <img src="${pageContext.request.contextPath}${item.product.imageUrl}" 
-                                         class="product-img" alt="${item.product.name}" 
-                                         onerror="this.src='${pageContext.request.contextPath}/assets/images/default-product.jpg'"> 
+                                    <img src="${item.product.imageUrl}"
+                                         class="product-img" alt="${item.product.name}"
+                                         onerror="this.src='${pageContext.request.contextPath}/assets/images/default-product.jpg'">
                                 </div>
                                 <div class="col">
                                     <h6 class="mb-0">${item.product.name}</h6>
