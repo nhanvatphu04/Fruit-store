@@ -67,8 +67,7 @@
                 </div>
                 <div class="col-md-4">
                     <div class="stats-card">
-                        <i class="fas fa-dollar-sign text-warning"></i>
-                        <h3 class="text-warning">$${totalRevenue}</h3>
+                        <h3 class="text-warning">đ${totalRevenue}</h3>
                         <p class="text-muted mb-0">Total Revenue</p>
                     </div>
                 </div>
@@ -97,7 +96,7 @@
                                         <tr>
                                             <td>#${order.orderId}</td>
                                             <td>${order.userName}</td>
-                                            <td>$${order.totalAmount}</td>
+                                            <td>đ${order.totalAmount}</td>
                                             <td>
                                                 <span class="badge bg-${order.status == 'completed' ? 'success' : 
                                                                       order.status == 'pending' ? 'warning' : 'secondary'}">

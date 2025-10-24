@@ -15,6 +15,7 @@ import services.DiscountService;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Map;
 
 @WebServlet("/discount/*")
@@ -22,6 +23,26 @@ public class DiscountApiController extends HttpServlet {
     private final DiscountService discountService = new DiscountService();
     private final CartService cartService = new CartService();
     private final Gson gson = new Gson();
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        PrintWriter out = response.getWriter();
+
+        try {
+            String pathInfo = request.getPathInfo();
+            if ("/available".equals(pathInfo)) {
+                handleGetAvailableDiscounts(request, response);
+            }
+        } catch (Exception e) {
+            out.print(gson.toJson(Map.of(
+                "success", false,
+                "message", "Có lỗi xảy ra: " + e.getMessage()
+            )));
+        }
+    }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -50,6 +71,29 @@ public class DiscountApiController extends HttpServlet {
             out.print(gson.toJson(Map.of(
                 "success", false,
                 "message", "Có lỗi xảy ra: " + e.getMessage()
+            )));
+        }
+    }
+
+    private void handleGetAvailableDiscounts(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        try {
+            // Lấy tất cả mã giảm giá
+            List<Discount> allDiscounts = discountService.getAllDiscounts();
+
+            // Lọc chỉ những mã giảm giá đang hoạt động
+            List<Discount> activeDiscounts = allDiscounts.stream()
+                    .filter(discountService::isDiscountActive)
+                    .toList();
+
+            response.getWriter().print(gson.toJson(Map.of(
+                "success", true,
+                "discounts", activeDiscounts
+            )));
+        } catch (Exception e) {
+            response.getWriter().print(gson.toJson(Map.of(
+                "success", false,
+                "message", "Không thể tải danh sách mã giảm giá: " + e.getMessage()
             )));
         }
     }

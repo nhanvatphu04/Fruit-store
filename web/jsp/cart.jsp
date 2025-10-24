@@ -64,10 +64,22 @@
 
     <div class="container my-5">
         <h2 class="mb-4">Giỏ hàng của bạn</h2>
-        
+
         <div class="row">
             <!-- Giỏ hàng -->
             <div class="col-lg-8">
+                <!-- Select All Checkbox -->
+                <c:if test="${not empty cartItems or not empty cartCombos}">
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="selectAllCheckbox">
+                            <label class="form-check-label" for="selectAllCheckbox">
+                                <strong>Chọn tất cả</strong>
+                            </label>
+                        </div>
+                    </div>
+                </c:if>
+
                 <c:if test="${empty cartItems and empty cartCombos}">
                     <div class="alert alert-info">
                         Giỏ hàng của bạn đang trống!
@@ -215,10 +227,12 @@
                 <div class="discount-section mb-4">
                     <h5>Mã giảm giá</h5>
                     <div class="input-group mb-3">
-                        <input type="text" class="form-control" id="discountCode" 
-                               placeholder="Nhập mã giảm giá">
+                        <select class="form-select" id="discountCode">
+                            <option value="">-- Chọn mã giảm giá --</option>
+                        </select>
                         <button class="btn btn-success" id="applyDiscount">Áp dụng</button>
                     </div>
+                    <small class="text-muted d-block mb-2" id="discountInfo"></small>
                     <div id="discountMessage"></div>
                 </div>
 
@@ -263,6 +277,33 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         $(document).ready(function() {
+            // Load available discount codes
+            loadAvailableDiscounts();
+
+            // Select all checkbox functionality
+            $('#selectAllCheckbox').change(function() {
+                let isChecked = $(this).prop('checked');
+                $('.select-item').prop('checked', isChecked);
+                $('.select-combo').prop('checked', isChecked);
+
+                // Trigger change event for each checkbox to update totals
+                $('.select-item').each(function() {
+                    $(this).trigger('change');
+                });
+                $('.select-combo').each(function() {
+                    $(this).trigger('change');
+                });
+            });
+
+            // Update select all checkbox when individual items are checked/unchecked
+            $(document).on('change', '.select-item, .select-combo', function() {
+                let totalCheckboxes = $('.select-item').length + $('.select-combo').length;
+                let checkedCheckboxes = $('.select-item:checked').length + $('.select-combo:checked').length;
+
+                if (totalCheckboxes > 0) {
+                    $('#selectAllCheckbox').prop('checked', totalCheckboxes === checkedCheckboxes);
+                }
+            });
             // Tăng số lượng sản phẩm
             $('.increase-qty').click(function() {
                 let cartId = $(this).data('cart-id');
@@ -434,9 +475,49 @@
                 });
             });
 
+            // Load available discount codes
+            function loadAvailableDiscounts() {
+                $.ajax({
+                    url: '${pageContext.request.contextPath}/discount/available',
+                    method: 'GET',
+                    success: function(response) {
+                        if (response.success && response.discounts) {
+                            let discountSelect = $('#discountCode');
+                            discountSelect.empty();
+                            discountSelect.append('<option value="">-- Chọn mã giảm giá --</option>');
+
+                            response.discounts.forEach(function(discount) {
+                                let optionText = discount.code + ' - ' + discount.description;
+                                discountSelect.append(
+                                    '<option value="' + discount.code + '" data-description="' + discount.description + '">' + optionText + '</option>'
+                                );
+                            });
+                        }
+                    },
+                    error: function() {
+                        console.log('Không thể tải danh sách mã giảm giá');
+                    }
+                });
+            }
+
+            // Show discount info when selected
+            $('#discountCode').change(function() {
+                let selectedOption = $(this).find('option:selected');
+                let description = selectedOption.data('description');
+                if (description) {
+                    $('#discountInfo').text('Mô tả: ' + description);
+                } else {
+                    $('#discountInfo').text('');
+                }
+            });
+
             // Áp dụng mã giảm giá
             $('#applyDiscount').click(function() {
                 let code = $('#discountCode').val();
+                if (!code) {
+                    Swal.fire('Thông báo', 'Vui lòng chọn mã giảm giá', 'warning');
+                    return;
+                }
                 $.ajax({
                     url: '${pageContext.request.contextPath}/discount/apply',
                     method: 'POST',

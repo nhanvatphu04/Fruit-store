@@ -76,8 +76,8 @@
                                         <img src="${pageContext.request.contextPath}/${combo.imageUrl}" alt="${combo.name}" class="img-thumbnail me-2" style="width: 50px; height: 50px;">
                                         ${combo.name}
                                     </td>
-                                    <td>$${combo.originalPrice}</td>
-                                    <td>$${combo.comboPrice}</td>
+                                    <td>đ${combo.originalPrice}</td>
+                                    <td>đ${combo.comboPrice}</td>
                                     <td>
                                         <fmt:formatDate value="${combo.startDate}" pattern="dd/MM/yyyy"/> -
                                         <fmt:formatDate value="${combo.endDate}" pattern="dd/MM/yyyy"/>
@@ -182,7 +182,7 @@
                                 <div class="col-md-6">
                                     <select class="form-select" id="productId" name="productId" required>
                                         <c:forEach items="${products}" var="product">
-                                            <option value="${product.productId}">${product.name} - $${product.price}</option>
+                                            <option value="${product.productId}">${product.name} - đ${product.price}</option>
                                         </c:forEach>
                                     </select>
                                 </div>

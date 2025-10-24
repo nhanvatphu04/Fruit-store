@@ -35,10 +35,10 @@
                 <a href="${pageContext.request.contextPath}/admin/users" class="sidebar-link">
                     <i class="fas fa-users me-2"></i> Users
                 </a>
-                <a href="${pageContext.request.contextPath}/admin/products" class="sidebar-link active">
+                <a href="${pageContext.request.contextPath}/admin/products" class="sidebar-link">
                     <i class="fas fa-apple-alt me-2"></i> Products
                 </a>
-                <a href="${pageContext.request.contextPath}/admin/orders" class="sidebar-link">
+                <a href="${pageContext.request.contextPath}/admin/orders" class="sidebar-link active">
                     <i class="fas fa-shopping-cart me-2"></i> Orders
                 </a>
                 <a href="${pageContext.request.contextPath}/admin/discounts" class="sidebar-link">
@@ -48,6 +48,11 @@
                     <i class="fas fa-boxes me-2"></i> Combos
                 </a>
             </nav>
+            
+            <!-- Home Button -->
+            <a href="${pageContext.request.contextPath}/" class="sidebar-link mt-auto">
+                <i class="fas fa-home me-2"></i> Back to Home
+            </a>
         </div>
 
         <!-- Main Content -->
@@ -84,7 +89,7 @@
                                         <img src="${pageContext.request.contextPath}${empty product.imageUrl ? '/assets/images/products/default.png' : '/' += product.imageUrl}" class="product-image" alt="${product.name}">
                                     </td>
                                     <td>${product.name}</td>
-                                    <td>$${product.price}</td>
+                                    <td>đ${product.price}</td>
                                     <td>${product.stockQuantity}</td>
                                     <td>${product.category.name}</td>
                                     <td>${product.discountPercent}%</td>

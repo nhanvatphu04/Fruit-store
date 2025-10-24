@@ -88,7 +88,7 @@
                                 <tr>
                                     <td>#${order.orderId}</td>
                                     <td>${order.userName}</td>
-                                    <td>$${order.totalAmount}</td>
+                                    <td>đ${order.totalAmount}</td>
                                     <td>
                                         <span class="badge bg-${order.status == 'completed' ? 'success' : 
                                                               order.status == 'pending' ? 'warning' : 'danger'}">

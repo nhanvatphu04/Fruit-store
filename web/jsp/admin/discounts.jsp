@@ -83,11 +83,11 @@
                                                 ${discount.discountValue}%
                                             </c:when>
                                             <c:otherwise>
-                                                $${discount.discountValue}
+                                                đ${discount.discountValue}
                                             </c:otherwise>
                                         </c:choose>
                                     </td>
-                                    <td>$${discount.minOrderAmount}</td>
+                                    <td>đ${discount.minOrderAmount}</td>
                                     <td>${discount.usageLimit}</td>
                                     <td>${discount.usedCount}</td>
                                     <td>

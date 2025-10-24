@@ -49,6 +49,11 @@
                     <i class="fas fa-boxes me-2"></i> Combos
                 </a>
             </nav>
+            
+            <!-- Home Button -->
+            <a href="${pageContext.request.contextPath}/" class="sidebar-link mt-auto">
+                <i class="fas fa-home me-2"></i> Back to Home
+            </a>
         </div>
 
         <!-- Main Content -->
