@@ -87,7 +87,10 @@ CREATE TABLE orders (
     total_amount DECIMAL(10,2),
     status ENUM('pending', 'completed', 'cancelled') DEFAULT 'pending',
     order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(user_id)
+    discount_code VARCHAR(50),
+    discount_amount DECIMAL(10,2) DEFAULT 0,
+    FOREIGN KEY (user_id) REFERENCES users(user_id),
+    INDEX idx_discount_code (discount_code)
 );
 
 -- Bảng chi tiết đơn hàng
@@ -174,14 +177,5 @@ CREATE TABLE IF NOT EXISTS discount_usage (
     INDEX idx_discount_code (discount_code),
     INDEX idx_used_at (used_at)
 );
-
--- Add discount_code and discount_amount columns to orders table if they don't exist
-ALTER TABLE orders ADD COLUMN IF NOT EXISTS discount_code VARCHAR(50);
-ALTER TABLE orders ADD COLUMN IF NOT EXISTS discount_amount DECIMAL(10,2) DEFAULT 0;
-
--- Create index for discount_code in orders table
-ALTER TABLE orders ADD INDEX IF NOT EXISTS idx_discount_code (discount_code);
-
-SELECT 'discount_usage table created successfully' as status;
 
 -- =============================
