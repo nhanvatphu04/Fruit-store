@@ -27,7 +27,6 @@ public class DbConnect {
     
     // Biến instance Singleton
     private static DbConnect instance;
-    private Connection connection;
     
     /**
      * Hàm khởi tạo private để ngăn tạo đối tượng trực tiếp
@@ -56,23 +55,20 @@ public class DbConnect {
     
     /**
      * Lấy kết nối đến cơ sở dữ liệu
+     * Luôn tạo kết nối mới để tránh chia sẻ Connection giữa các thread
      * @return Đối tượng Connection
      * @throws SQLException nếu kết nối thất bại
      */
     public Connection getConnection() throws SQLException {
-        if (connection == null || connection.isClosed()) {
-            try {
-                connection = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
-                System.out.println("Database connected successfully!");
-            } catch (SQLException e) {
-                System.err.println("Failed to connect to database!");
-                System.err.println("URL: " + DB_URL);
-                System.err.println("Username: " + DB_USERNAME);
-                e.printStackTrace();
-                throw e;
-            }
+        try {
+            return DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
+        } catch (SQLException e) {
+            System.err.println("Failed to connect to database!");
+            System.err.println("URL: " + DB_URL);
+            System.err.println("Username: " + DB_USERNAME);
+            e.printStackTrace();
+            throw e;
         }
-        return connection;
     }
     
     /**
@@ -97,15 +93,8 @@ public class DbConnect {
      * Đóng kết nối cơ sở dữ liệu
      */
     public void closeConnection() {
-        try {
-            if (connection != null && !connection.isClosed()) {
-                connection.close();
-                System.out.println("Database connection closed successfully!");
-            }
-        } catch (SQLException e) {
-            System.err.println("Error closing database connection!");
-            e.printStackTrace();
-        }
+        // Deprecated: mỗi lần gọi getConnection() hiện đã tạo kết nối mới
+        // và nên được đóng bằng try-with-resources tại nơi sử dụng.
     }
     
     /**

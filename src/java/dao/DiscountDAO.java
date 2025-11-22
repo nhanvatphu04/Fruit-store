@@ -15,9 +15,10 @@ public class DiscountDAO {
 		try (Connection conn = DbConnect.getInstance().getConnection();
 			 PreparedStatement ps = conn.prepareStatement(sql)) {
 			ps.setString(1, code);
-			ResultSet rs = ps.executeQuery();
-			if (rs.next()) {
-				return mapResultSetToDiscount(rs);
+			try (ResultSet rs = ps.executeQuery()) {
+				if (rs.next()) {
+					return mapResultSetToDiscount(rs);
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -30,8 +31,8 @@ public class DiscountDAO {
 		List<Discount> list = new ArrayList<>();
 		String sql = "SELECT * FROM discounts";
 		try (Connection conn = DbConnect.getInstance().getConnection();
-			 PreparedStatement ps = conn.prepareStatement(sql)) {
-			ResultSet rs = ps.executeQuery();
+			 PreparedStatement ps = conn.prepareStatement(sql);
+			 ResultSet rs = ps.executeQuery()) {
 			while (rs.next()) {
 				list.add(mapResultSetToDiscount(rs));
 			}
