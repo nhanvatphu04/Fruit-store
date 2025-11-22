@@ -6,7 +6,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Combo Management - FruitStore</title>
-        <!-- Bootstrap CSS -->
+<!-- Bootstrap CSS -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
         <!-- Font Awesome -->
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -76,8 +76,8 @@
                                         <img src="${pageContext.request.contextPath}/${combo.imageUrl}" alt="${combo.name}" class="img-thumbnail me-2" style="width: 50px; height: 50px;">
                                         ${combo.name}
                                     </td>
-                                    <td>đ${combo.originalPrice}</td>
-                                    <td>đ${combo.comboPrice}</td>
+                                    <td><fmt:formatNumber value="${combo.originalPrice}" type="number" groupingUsed="true" maxFractionDigits="0"/>đ</td>
+                                    <td><fmt:formatNumber value="${combo.comboPrice}" type="number" groupingUsed="true" maxFractionDigits="0"/>đ</td>
                                     <td>
                                         <fmt:formatDate value="${combo.startDate}" pattern="dd/MM/yyyy"/> -
                                         <fmt:formatDate value="${combo.endDate}" pattern="dd/MM/yyyy"/>
@@ -88,13 +88,13 @@
                                         </span>
                                     </td>
                                     <td>
-                                        <button type="button" class="btn btn-sm btn-primary me-1" onclick="editCombo(${combo.comboId})">
+                                        <button type="button" class="btn btn-sm btn-primary me-1" onclick="editCombo('${combo.comboId}')">
                                             <i class="fas fa-edit"></i>
                                         </button>
-                                        <button type="button" class="btn btn-sm btn-danger me-1" onclick="deleteCombo(${combo.comboId})">
+                                        <button type="button" class="btn btn-sm btn-danger me-1" onclick="deleteCombo('${combo.comboId}')">
                                             <i class="fas fa-trash"></i>
                                         </button>
-                                        <button type="button" class="btn btn-sm btn-info" onclick="manageComboItems(${combo.comboId})">
+                                        <button type="button" class="btn btn-sm btn-info" onclick="manageComboItems('${combo.comboId}')">
                                             <i class="fas fa-list"></i>
                                         </button>
                                     </td>
@@ -182,7 +182,7 @@
                                 <div class="col-md-6">
                                     <select class="form-select" id="productId" name="productId" required>
                                         <c:forEach items="${products}" var="product">
-                                            <option value="${product.productId}">${product.name} - đ${product.price}</option>
+                                            <option value="${product.productId}">${product.name} - <fmt:formatNumber value="${product.price}" type="number" groupingUsed="true" maxFractionDigits="0"/>đ</option>
                                         </c:forEach>
                                     </select>
                                 </div>

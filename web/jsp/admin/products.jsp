@@ -1,5 +1,6 @@
 <%@ page contentType="text/html" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html>
     <head>
@@ -89,7 +90,7 @@
                                         <img src="${pageContext.request.contextPath}${empty product.imageUrl ? '/assets/images/products/default.png' : '/' += product.imageUrl}" class="product-image" alt="${product.name}">
                                     </td>
                                     <td>${product.name}</td>
-                                    <td>đ${product.price}</td>
+                                    <td><fmt:formatNumber value="${product.price}" type="number" groupingUsed="true" maxFractionDigits="0"/>đ</td>
                                     <td>${product.stockQuantity}</td>
                                     <td>${product.category.name}</td>
                                     <td>${product.discountPercent}%</td>

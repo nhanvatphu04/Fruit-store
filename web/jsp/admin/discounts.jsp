@@ -83,11 +83,11 @@
                                                 ${discount.discountValue}%
                                             </c:when>
                                             <c:otherwise>
-                                                đ${discount.discountValue}
+                                                <fmt:formatNumber value="${discount.discountValue}" type="number" groupingUsed="true" maxFractionDigits="0"/>đ
                                             </c:otherwise>
                                         </c:choose>
                                     </td>
-                                    <td>đ${discount.minOrderAmount}</td>
+                                    <td><fmt:formatNumber value="${discount.minOrderAmount}" type="number" groupingUsed="true" maxFractionDigits="0"/>đ</td>
                                     <td>${discount.usageLimit}</td>
                                     <td>${discount.usedCount}</td>
                                     <td>
@@ -101,11 +101,11 @@
                                     </td>
                                     <td>
                                         <button type="button" class="btn btn-sm btn-primary"
-                                                onclick="editDiscount(${discount.discountId})">
+                                                onclick="editDiscount('${discount.discountId}')">
                                             <i class="fas fa-edit"></i>
                                         </button>
                                         <button type="button" class="btn btn-sm btn-danger"
-                                                onclick="deleteDiscount(${discount.discountId})">
+                                                onclick="deleteDiscount('${discount.discountId}')">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     </td>

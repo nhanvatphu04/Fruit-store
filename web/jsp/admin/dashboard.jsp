@@ -1,5 +1,6 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html>
     <head>
@@ -67,7 +68,7 @@
                 </div>
                 <div class="col-md-4">
                     <div class="stats-card">
-                        <h3 class="text-warning">đ${totalRevenue}</h3>
+                        <h3 class="text-warning"><fmt:formatNumber value="${totalRevenue}" type="number" groupingUsed="true" maxFractionDigits="0"/>đ</h3>
                         <p class="text-muted mb-0">Total Revenue</p>
                     </div>
                 </div>
@@ -114,7 +115,7 @@
                                         <tr>
                                             <td>#${order.orderId}</td>
                                             <td>${order.userName}</td>
-                                            <td>đ${order.totalAmount}</td>
+                                            <td><fmt:formatNumber value="${order.totalAmount}" type="number" groupingUsed="true" maxFractionDigits="0"/>đ</td>
                                             <td>
                                                 <span class="badge bg-${order.status == 'completed' ? 'success' : 
                                                                       order.status == 'pending' ? 'warning' : 'secondary'}">
@@ -169,7 +170,7 @@
                                             <td>${customer.fullName != null ? customer.fullName : '-'}</td>
                                             <td>${customer.username}</td>
                                             <td>${customer.totalOrders}</td>
-                                            <td>đ${customer.totalSpend}</td>
+                                            <td><fmt:formatNumber value="${customer.totalSpend}" type="number" groupingUsed="true" maxFractionDigits="0"/>đ</td>
                                             <td>${customer.lastOrderDate}</td>
                                         </tr>
                                     </c:forEach>
@@ -292,6 +293,20 @@
                         },
                         title: {
                             display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.y !== null) {
+                                        label += context.parsed.y.toLocaleString('vi-VN') + '₫';
+                                    }
+                                    return label;
+                                }
+                            }
                         }
                     },
                     scales: {
@@ -299,7 +314,7 @@
                             beginAtZero: true,
                             ticks: {
                                 callback: function(value) {
-                                    return 'đ' + value.toLocaleString();
+                                    return value.toLocaleString('vi-VN') + 'đ';
                                 }
                             }
                         }
