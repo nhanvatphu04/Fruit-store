@@ -1,6 +1,5 @@
 package test;
 
-import dao.DiscountDAO;
 import models.Discount;
 import services.DiscountService;
 import java.math.BigDecimal;
@@ -14,11 +13,9 @@ import java.util.Map;
 public class DiscountFunctionalityTest {
     
     private static DiscountService discountService;
-    private static DiscountDAO discountDAO;
     
     public static void main(String[] args) {
         discountService = new DiscountService();
-        discountDAO = new DiscountDAO();
         
         System.out.println("=== Discount Functionality Test Suite ===\n");
         

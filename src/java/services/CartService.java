@@ -40,23 +40,24 @@ public class CartService {
     // Tính tổng tiền giỏ hàng trước giảm giá
     public BigDecimal getCartSubtotal(int userId) {
         List<CartItem> cartItems = getCartByUserId(userId);
+        List<CartCombo> cartCombos = getCartCombosByUserId(userId);
         BigDecimal subtotal = BigDecimal.ZERO;
         
+        // Sản phẩm lẻ
         for (CartItem item : cartItems) {
             if (item.isSelected() && item.getProduct() != null) {
-                BigDecimal price = item.getProduct().getPrice();
-                BigDecimal quantity = new BigDecimal(item.getQuantity());
-                
-                // Tính giá sau khi giảm
-                if (item.getProduct().getDiscountPercent() > 0) {
-                    BigDecimal discount = price.multiply(
-                        new BigDecimal(item.getProduct().getDiscountPercent())
-                            .divide(new BigDecimal(100))
+                subtotal = subtotal.add(item.getTotal());
+            }
+        }
+
+        // Combo
+        if (cartCombos != null) {
+            for (CartCombo combo : cartCombos) {
+                if (combo.isSelected() && combo.getCombo() != null) {
+                    subtotal = subtotal.add(
+                        combo.getCombo().getSalePrice().multiply(new BigDecimal(combo.getQuantity()))
                     );
-                    price = price.subtract(discount);
                 }
-                
-                subtotal = subtotal.add(price.multiply(quantity));
             }
         }
         

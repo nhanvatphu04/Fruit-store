@@ -17,7 +17,6 @@ import models.CartItem;
 import models.CartCombo;
 import models.User;
 import services.CartService;
-import services.ProductService;
 
 @WebServlet(name = "CartController", urlPatterns = {
     "/cart",
@@ -33,14 +32,12 @@ import services.ProductService;
 })
 public class CartController extends HttpServlet {
     private CartService cartService;
-    private ProductService productService;
     private Gson gson;
 
     @Override
     public void init() throws ServletException {
         super.init();
         cartService = new CartService();
-        productService = new ProductService();
         gson = new Gson();
     }
 
@@ -277,12 +274,21 @@ public class CartController extends HttpServlet {
         List<CartItem> cartItems = cartService.getCartByUserId(user.getUserId());
         List<CartCombo> cartCombos = cartService.getCartCombosByUserId(user.getUserId());
         BigDecimal subtotal = cartService.calculateSelectedTotal(cartItems, cartCombos);
-        BigDecimal discount = BigDecimal.ZERO;
 
-        // Lấy giảm giá từ session nếu có
-        BigDecimal sessionDiscount = (BigDecimal) session.getAttribute("cartDiscount");
-        if (sessionDiscount != null) {
-            discount = sessionDiscount;
+        // Tính lại giảm giá dựa trên mã hiện đang áp dụng (nếu có)
+        BigDecimal discount = BigDecimal.ZERO;
+        String discountCode = (String) session.getAttribute("appliedDiscount");
+        if (discountCode != null && !discountCode.trim().isEmpty()) {
+            services.DiscountService discountService = new services.DiscountService();
+            Map<String, Object> discountResult = discountService.applyDiscount(discountCode, subtotal);
+            if (Boolean.TRUE.equals(discountResult.get("success"))) {
+                discount = (BigDecimal) discountResult.get("discountAmount");
+                session.setAttribute("cartDiscount", discount);
+            } else {
+                // Nếu không còn hợp lệ, huỷ mã giảm giá hiện tại
+                session.removeAttribute("appliedDiscount");
+                session.removeAttribute("cartDiscount");
+            }
         }
 
         result.put("success", true);

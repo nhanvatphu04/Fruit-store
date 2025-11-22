@@ -3,7 +3,6 @@ package controllers;
 import com.google.gson.Gson;
 
 import dao.CartComboDAO;
-import dao.CartDAO;
 import dao.ComboDAO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -21,7 +20,6 @@ import java.util.Map;
 @WebServlet(name = "CartApiController", urlPatterns = {"/cart/add-combo"})
 public class CartApiController extends HttpServlet {
     private final ComboDAO comboDAO = new ComboDAO();
-    private final CartDAO cartDAO = new CartDAO();
     private final CartComboDAO cartComboDAO = new CartComboDAO();
     private final Gson gson = new Gson();
 

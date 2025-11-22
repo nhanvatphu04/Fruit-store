@@ -63,10 +63,15 @@ public class SearchController extends HttpServlet {
 
     // Class nội bộ để serialize kết quả tìm kiếm
     private static class SearchResult {
+        @SuppressWarnings("unused")
         private final int id;
+        @SuppressWarnings("unused")
         private final String name;
+        @SuppressWarnings("unused")
         private final String price;
+        @SuppressWarnings("unused")
         private final String image;
+        @SuppressWarnings("unused")
         private final int discountPercent;
 
         public SearchResult(int id, String name, String price, String image, int discountPercent) {

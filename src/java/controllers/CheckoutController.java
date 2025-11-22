@@ -1,6 +1,5 @@
 package controllers;
 
-import com.google.gson.Gson;
 import dao.OrderDAO;
 import dao.OrderItemDAO;
 import dao.ProductDAO;
@@ -17,7 +16,6 @@ import models.User;
 import models.Discount;
 import services.CartService;
 import services.DiscountService;
-import services.OrderService;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -28,12 +26,9 @@ import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
 
 @WebServlet(name = "CheckoutController", urlPatterns = {"/checkout"})
 public class CheckoutController extends HttpServlet {
-    private OrderService orderService;
     private CartService cartService;
     private DiscountService discountService;
     private OrderDAO orderDAO;
@@ -43,11 +38,9 @@ public class CheckoutController extends HttpServlet {
     private CartComboDAO cartComboDAO;
     private DiscountUsageDAO discountUsageDAO;
     private OrderComboDAO orderComboDAO;
-    private Gson gson;
 
     @Override
     public void init() throws ServletException {
-        orderService = new OrderService();
         cartService = new CartService();
         discountService = new DiscountService();
         orderDAO = new OrderDAO();
@@ -57,7 +50,6 @@ public class CheckoutController extends HttpServlet {
         cartComboDAO = new CartComboDAO();
         discountUsageDAO = new DiscountUsageDAO();
         orderComboDAO = new OrderComboDAO();
-        gson = new Gson();
     }
 
     @Override
