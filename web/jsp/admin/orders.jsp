@@ -114,58 +114,7 @@
             </div>
         </div>
 
-        <!-- View Order Modal -->
-        <div class="modal fade" id="viewOrderModal" tabindex="-1">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Order Details</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                    <div class="modal-body">
-                        <!-- Order Info -->
-                        <div class="row mb-4">
-                            <div class="col-md-6">
-                                <h6>Order Information</h6>
-                                <p class="mb-1">Order ID: <span id="modalOrderId"></span></p>
-                                <p class="mb-1">Date: <span id="modalOrderDate"></span></p>
-                                <p class="mb-1">Status: <span id="modalOrderStatus"></span></p>
-                            </div>
-                            <div class="col-md-6">
-                                <h6>Customer Information</h6>
-                                <p class="mb-1">Name: <span id="modalCustomerName"></span></p>
-                                <p class="mb-1">Email: <span id="modalCustomerEmail"></span></p>
-                                <p class="mb-1">Phone: <span id="modalCustomerPhone"></span></p>
-                            </div>
-                        </div>
-                        
-                        <!-- Order Items -->
-                        <h6>Order Items</h6>
-                        <div class="table-responsive">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>Product</th>
-                                        <th>Price</th>
-                                        <th>Quantity</th>
-                                        <th>Subtotal</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="modalOrderItems">
-                                    <!-- Items will be inserted here -->
-                                </tbody>
-                                <tfoot>
-                                    <tr>
-                                        <td colspan="3" class="text-end"><strong>Total:</strong></td>
-                                        <td id="modalOrderTotal"></td>
-                                    </tr>
-                                </tfoot>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <%@ include file="../common/order-details-modal.jsp" %>
 
         <!-- Scripts -->
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

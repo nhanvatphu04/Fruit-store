@@ -5,7 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 import models.Order;
 import models.OrderItem;
+import models.OrderCombo;
 import models.Product;
+import models.Combo;
 import utils.DbConnect;
 
 // DAO cho đơn hàng
@@ -177,6 +179,8 @@ public class OrderDAO {
 	private void loadOrderItems(Order order) {
 		OrderItemDAO orderItemDAO = new OrderItemDAO();
 		ProductDAO productDAO = new ProductDAO();
+		OrderComboDAO orderComboDAO = new OrderComboDAO();
+		ComboDAO comboDAO = new ComboDAO();
 		List<OrderItem> orderItems = orderItemDAO.getOrderItems(order.getOrderId());
 
 		System.out.println("DEBUG: Loading order items for order " + order.getOrderId() + ", found " + orderItems.size() + " items");
@@ -190,6 +194,14 @@ public class OrderDAO {
 		}
 
 		order.setOrderItems(orderItems);
+
+		// Load combos for this order
+		List<OrderCombo> orderCombos = orderComboDAO.getOrderCombosByOrderId(order.getOrderId());
+		for (OrderCombo oc : orderCombos) {
+			Combo combo = comboDAO.getComboById(oc.getComboId());
+			oc.setCombo(combo);
+		}
+		order.setOrderCombos(orderCombos);
 		System.out.println("DEBUG: Order items set, total items: " + order.getOrderItems().size());
 	}
 

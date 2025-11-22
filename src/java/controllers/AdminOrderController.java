@@ -17,7 +17,9 @@ import java.util.List;
 import java.util.Map;
 import models.Order;
 import models.OrderItem;
+import models.OrderCombo;
 import models.Product;
+import models.Combo;
 import models.User;
 
 
@@ -168,6 +170,34 @@ public class AdminOrderController extends HttpServlet {
                         itemsList.add(itemMap);
                     }
                     orderDetails.put("items", itemsList);
+
+                    // Thêm danh sách combo trong đơn hàng
+                    List<Map<String, Object>> combosList = new ArrayList<>();
+                    List<OrderCombo> orderCombos = order.getOrderCombos();
+                    if (orderCombos != null) {
+                        for (OrderCombo oc : orderCombos) {
+                            Map<String, Object> comboMap = new HashMap<>();
+                            comboMap.put("orderComboId", oc.getOrderComboId());
+                            comboMap.put("orderId", oc.getOrderId());
+                            comboMap.put("comboId", oc.getComboId());
+                            comboMap.put("quantity", oc.getQuantity());
+                            comboMap.put("price", oc.getPrice() != null ? oc.getPrice().toString() : "0");
+
+                            Combo combo = oc.getCombo();
+                            if (combo != null) {
+                                Map<String, Object> comboInfo = new HashMap<>();
+                                comboInfo.put("comboId", combo.getComboId());
+                                comboInfo.put("name", combo.getName() != null ? combo.getName() : "Combo");
+                                comboInfo.put("imageUrl", combo.getImageUrl() != null ? combo.getImageUrl() : "");
+                                comboInfo.put("description", combo.getDescription() != null ? combo.getDescription() : "");
+                                comboInfo.put("salePrice", combo.getSalePrice() != null ? combo.getSalePrice().toString() : "0");
+                                comboMap.put("combo", comboInfo);
+                            }
+
+                            combosList.add(comboMap);
+                        }
+                    }
+                    orderDetails.put("combos", combosList);
 
                     // Gửi response dạng JSON
                     String jsonResponse = gson.toJson(orderDetails);

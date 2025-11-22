@@ -14,6 +14,7 @@ public class Order {
     private String discountCode;  // Mã giảm giá được áp dụng
     private BigDecimal discountAmount;  // Số tiền giảm
     private List<OrderItem> orderItems;  // Danh sách các mặt hàng trong đơn hàng
+    private List<OrderCombo> orderCombos; // Danh sách combo trong đơn hàng
 
     // Constructors
     public Order() {}
@@ -103,6 +104,14 @@ public class Order {
 
     public void setOrderItems(List<OrderItem> orderItems) {
         this.orderItems = orderItems;
+    }
+
+    public List<OrderCombo> getOrderCombos() {
+        return orderCombos;
+    }
+
+    public void setOrderCombos(List<OrderCombo> orderCombos) {
+        this.orderCombos = orderCombos;
     }
 
     @Override

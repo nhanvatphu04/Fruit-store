@@ -175,68 +175,7 @@
         </c:if>
     </div>
 
-    <!-- Order Details Modal -->
-    <div class="modal fade" id="orderDetailsModal" tabindex="-1" aria-labelledby="orderDetailsModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="orderDetailsModalLabel">Chi tiết đơn hàng <span id="modalOrderId"></span></h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <!-- Order Info -->
-                    <div class="row mb-4">
-                        <div class="col-md-6">
-                            <h6><i class="fas fa-info-circle me-2"></i>Thông tin đơn hàng</h6>
-                            <p class="mb-1"><strong>Mã đơn:</strong> <span id="detailOrderId"></span></p>
-                            <p class="mb-1"><strong>Ngày đặt:</strong> <span id="detailOrderDate"></span></p>
-                            <p class="mb-1"><strong>Trạng thái:</strong> <span id="detailOrderStatus"></span></p>
-                        </div>
-                        <div class="col-md-6">
-                            <h6><i class="fas fa-user me-2"></i>Thông tin khách hàng</h6>
-                            <p class="mb-1"><strong>Tên:</strong> <span id="detailCustomerName"></span></p>
-                            <p class="mb-1"><strong>Email:</strong> <span id="detailCustomerEmail"></span></p>
-                            <p class="mb-1"><strong>Điện thoại:</strong> <span id="detailCustomerPhone"></span></p>
-                        </div>
-                    </div>
-                    
-                    <!-- Discount Info (if applicable) -->
-                    <div id="discountSection" class="alert alert-success mb-4" style="display: none;">
-                        <h6><i class="fas fa-tag me-2"></i>Mã giảm giá</h6>
-                        <p class="mb-1"><strong>Mã:</strong> <span id="detailDiscountCode"></span></p>
-                        <p class="mb-0"><strong>Giảm giá:</strong> <span id="detailDiscountAmount"></span></p>
-                    </div>
-                    
-                    <!-- Order Items -->
-                    <h6><i class="fas fa-shopping-cart me-2"></i>Sản phẩm</h6>
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>Sản phẩm</th>
-                                    <th>Đơn giá</th>
-                                    <th>Số lượng</th>
-                                    <th>Thành tiền</th>
-                                </tr>
-                            </thead>
-                            <tbody id="detailOrderItems">
-                                <!-- Items will be inserted here -->
-                            </tbody>
-                            <tfoot>
-                                <tr class="table-light">
-                                    <td colspan="3" class="text-end"><strong>Tổng cộng:</strong></td>
-                                    <td><strong id="detailOrderTotal" class="text-success"></strong></td>
-                                </tr>
-                            </tfoot>
-                        </table>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                </div>
-            </div>
-        </div>
-    </div>
+    <%@ include file="common/order-details-modal.jsp" %>
 
     <!-- Include Footer -->
     <jsp:include page="common/footer.jsp"/>
@@ -304,12 +243,12 @@
                             $('#discountSection').hide();
                         }
                         
-                        // Order items
+                        // Order items & combos
                         let itemsHtml = '';
                         let total = 0;
 
                         if (response.items && Array.isArray(response.items) && response.items.length > 0) {
-                            response.items.forEach((item, index) => {
+                            response.items.forEach((item) => {
                                 const price = parseFloat(item.price) || 0;
                                 const quantity = parseInt(item.quantity) || 0;
                                 const subtotal = price * quantity;
@@ -324,10 +263,32 @@
                                     '<td>' + subtotal.toLocaleString('vi-VN') + '₫</td>' +
                                 '</tr>';
                             });
-                        } else {
+                        }
+
+                        if (response.combos && Array.isArray(response.combos) && response.combos.length > 0) {
+                            response.combos.forEach((comboItem) => {
+                                const price = parseFloat(comboItem.price) || 0;
+                                const quantity = parseInt(comboItem.quantity) || 0;
+                                const subtotal = price * quantity;
+                                total += subtotal;
+
+                                const comboName = (comboItem.combo && comboItem.combo.name)
+                                    ? '[Combo] ' + comboItem.combo.name
+                                    : 'Combo';
+
+                                itemsHtml += '<tr>' +
+                                    '<td>' + comboName + '</td>' +
+                                    '<td>' + price.toLocaleString('vi-VN') + '₫</td>' +
+                                    '<td>' + quantity + '</td>' +
+                                    '<td>' + subtotal.toLocaleString('vi-VN') + '₫</td>' +
+                                '</tr>';
+                            });
+                        }
+
+                        if (!itemsHtml) {
                             itemsHtml = '<tr><td colspan="4" class="text-center">Không có sản phẩm</td></tr>';
                         }
-                        
+
                         $('#detailOrderItems').html(itemsHtml);
                         $('#detailOrderTotal').text(total.toLocaleString('vi-VN') + '₫');
                         

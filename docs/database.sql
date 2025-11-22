@@ -93,6 +93,17 @@ CREATE TABLE orders (
     INDEX idx_discount_code (discount_code)
 );
 
+-- Bảng combo trong đơn hàng
+CREATE TABLE order_combos (
+    order_combo_id INT PRIMARY KEY AUTO_INCREMENT,
+    order_id INT NOT NULL,
+    combo_id INT NOT NULL,
+    quantity INT NOT NULL,
+    price DECIMAL(10,2) NOT NULL,
+    FOREIGN KEY (order_id) REFERENCES orders(order_id),
+    FOREIGN KEY (combo_id) REFERENCES combos(combo_id)
+);
+
 -- Bảng chi tiết đơn hàng
 CREATE TABLE order_items (
     order_item_id INT PRIMARY KEY AUTO_INCREMENT,

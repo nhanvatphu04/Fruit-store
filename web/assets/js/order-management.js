@@ -29,13 +29,17 @@ $(document).ready(function() {
 
         // Clear previous modal data
         $('#modalOrderId').text('');
-        $('#modalOrderDate').text('');
-        $('#modalOrderStatus').html('');
-        $('#modalCustomerName').text('');
-        $('#modalCustomerEmail').text('');
-        $('#modalCustomerPhone').text('');
-        $('#modalOrderItems').html('');
-        $('#modalOrderTotal').text('');
+        $('#detailOrderId').text('');
+        $('#detailOrderDate').text('');
+        $('#detailOrderStatus').html('');
+        $('#detailCustomerName').text('');
+        $('#detailCustomerEmail').text('');
+        $('#detailCustomerPhone').text('');
+        $('#detailDiscountCode').text('');
+        $('#detailDiscountAmount').text('');
+        $('#discountSection').hide();
+        $('#detailOrderItems').html('');
+        $('#detailOrderTotal').text('');
 
         // Fetch order details
         $.ajax({
@@ -60,8 +64,9 @@ $(document).ready(function() {
 
                 // Update modal with order details
                 $('#modalOrderId').text('#' + response.orderId);
-                $('#modalOrderDate').text(response.orderDate || 'N/A');
-                $('#modalOrderStatus').html(`
+                $('#detailOrderId').text('#' + response.orderId);
+                $('#detailOrderDate').text(response.orderDate || 'N/A');
+                $('#detailOrderStatus').html(`
                     <span class="badge bg-${response.status === 'completed' ? 'success' :
                                           response.status === 'pending' ? 'warning' : 'danger'}">
                         ${response.status || 'Unknown'}
@@ -74,17 +79,27 @@ $(document).ready(function() {
                 const customerEmail = customer.email || 'N/A';
                 const customerPhone = customer.phone || 'N/A';
 
-                $('#modalCustomerName').text(customerName);
-                $('#modalCustomerEmail').text(customerEmail);
-                $('#modalCustomerPhone').text(customerPhone);
+                $('#detailCustomerName').text(customerName);
+                $('#detailCustomerEmail').text(customerEmail);
+                $('#detailCustomerPhone').text(customerPhone);
 
-                // Update order items
+                // Discount info
+                if (response.discountCode && parseFloat(response.discountAmount || 0) > 0) {
+                    $('#detailDiscountCode').text(response.discountCode);
+                    $('#detailDiscountAmount').text(
+                        parseFloat(response.discountAmount).toLocaleString('vi-VN') + '₫'
+                    );
+                    $('#discountSection').show();
+                } else {
+                    $('#discountSection').hide();
+                }
+
+                // Update order items and combos
                 let itemsHtml = '';
                 let total = 0;
 
                 console.log('Items array:', response.items);
 
-                // Check if items exist and is an array
                 if (response.items && Array.isArray(response.items) && response.items.length > 0) {
                     response.items.forEach(item => {
                         const price = parseFloat(item.price) || 0;
@@ -93,8 +108,6 @@ $(document).ready(function() {
                         total += subtotal;
 
                         const productName = (item.product && item.product.name) ? item.product.name : 'Unknown Product';
-
-                        console.log('Adding item:', productName, 'Price:', price, 'Qty:', quantity);
 
                         itemsHtml += `
                             <tr>
@@ -105,23 +118,40 @@ $(document).ready(function() {
                             </tr>
                         `;
                     });
-                } else {
-                    console.log('No items found in response');
+                }
+
+                console.log('Combos array:', response.combos);
+                if (response.combos && Array.isArray(response.combos) && response.combos.length > 0) {
+                    response.combos.forEach(comboItem => {
+                        const price = parseFloat(comboItem.price) || 0;
+                        const quantity = parseInt(comboItem.quantity) || 0;
+                        const subtotal = price * quantity;
+                        total += subtotal;
+
+                        const comboName = (comboItem.combo && comboItem.combo.name)
+                            ? '[Combo] ' + comboItem.combo.name
+                            : 'Combo';
+
+                        itemsHtml += `
+                            <tr>
+                                <td>${comboName}</td>
+                                <td>₫${price.toLocaleString('vi-VN')}</td>
+                                <td>${quantity}</td>
+                                <td>₫${subtotal.toLocaleString('vi-VN')}</td>
+                            </tr>
+                        `;
+                    });
+                }
+
+                if (!itemsHtml) {
                     itemsHtml = '<tr><td colspan="4" class="text-center">No items found</td></tr>';
                 }
 
-                console.log('Items HTML:', itemsHtml);
-                console.log('Total amount:', total);
-
-                // Set the items HTML
-                $('#modalOrderItems').html(itemsHtml);
-
-                // Set the total with proper formatting
-                $('#modalOrderTotal').text('₫' + total.toLocaleString('vi-VN'));
+                $('#detailOrderItems').html(itemsHtml);
+                $('#detailOrderTotal').text('₫' + total.toLocaleString('vi-VN'));
 
                 // Show modal
-                console.log('Showing modal');
-                const modal = new bootstrap.Modal(document.getElementById('viewOrderModal'));
+                const modal = new bootstrap.Modal(document.getElementById('orderDetailsModal'));
                 modal.show();
             },
             error: function(xhr, status, error) {

@@ -7,6 +7,7 @@ import dao.ProductDAO;
 import dao.CartDAO;
 import dao.CartComboDAO;
 import dao.DiscountUsageDAO;
+import dao.OrderComboDAO;
 import models.Order;
 import models.OrderItem;
 import models.CartItem;
@@ -41,6 +42,7 @@ public class CheckoutController extends HttpServlet {
     private CartDAO cartDAO;
     private CartComboDAO cartComboDAO;
     private DiscountUsageDAO discountUsageDAO;
+    private OrderComboDAO orderComboDAO;
     private Gson gson;
 
     @Override
@@ -54,6 +56,7 @@ public class CheckoutController extends HttpServlet {
         cartDAO = new CartDAO();
         cartComboDAO = new CartComboDAO();
         discountUsageDAO = new DiscountUsageDAO();
+        orderComboDAO = new OrderComboDAO();
         gson = new Gson();
     }
 
@@ -207,6 +210,21 @@ public class CheckoutController extends HttpServlet {
 
                     // Xóa sản phẩm khỏi giỏ hàng
                     cartDAO.removeCartItem(item.getCartId());
+                }
+            }
+
+            // Thêm combos vào đơn hàng và xóa khỏi giỏ
+            for (CartCombo combo : selectedCombos) {
+                if (combo.getCombo() != null) {
+                    models.OrderCombo orderCombo = new models.OrderCombo();
+                    orderCombo.setOrderId(orderId);
+                    orderCombo.setComboId(combo.getComboId());
+                    orderCombo.setQuantity(combo.getQuantity());
+                    orderCombo.setPrice(combo.getCombo().getSalePrice());
+
+                    if (!orderComboDAO.addOrderCombo(orderCombo)) {
+                        throw new Exception("Không thể thêm combo vào đơn hàng");
+                    }
                 }
             }
 
