@@ -18,10 +18,8 @@ public class ComboController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Lấy danh sách tất cả combo
+        // Lấy danh sách tất cả combo để hiển thị
         List<Combo> combos = comboDAO.getAllCombos();
-        
-        // Set attribute để hiển thị trong JSP
         request.setAttribute("combos", combos);
         
         // Forward đến trang JSP

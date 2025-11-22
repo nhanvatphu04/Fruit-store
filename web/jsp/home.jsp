@@ -153,7 +153,7 @@
                         <div class="row">
                             <c:forEach items="${activeCombo}" var="combo">
                                 <div class="col-md-4 mb-4">
-                                    <div class="flash-sale-item shadow-sm rounded p-3">
+                                    <div class="combo-card shadow-sm rounded p-3">
                                         <div class="ribbon-wrapper">
                                             <span class="flash-sale-badge bg-success">-${combo.discountPercentage}%</span>
                                         </div>
@@ -169,21 +169,27 @@
                                         </div>
                                         <p class="combo-description text-muted">${combo.description}</p>
                                         <c:set var="now" value="<%= new java.util.Date().getTime() %>" />
-                                        <c:choose>
-                                            <c:when test="${combo.startDate.time > now}">
-                                                <button class="btn btn-secondary btn-lg w-100" disabled>
-                                                    <i class="fas fa-clock"></i> Sắp mở bán
-                                                </button>
-                                                <small class="text-muted d-block text-center mt-2">
-                                                    Bắt đầu vào: <fmt:formatDate value="${combo.startDate}" pattern="HH:mm dd/MM/yyyy" />
-                                                </small>
-                                            </c:when>
-                                            <c:otherwise>
-                                                <button class="btn btn-success btn-lg w-100" onclick="addComboToCart('${combo.comboId}')">
-                                                    <i class="fas fa-shopping-cart"></i> Thêm vào giỏ
-                                                </button>
-                                            </c:otherwise>
-                                        </c:choose>
+                                        <div class="d-grid gap-2">
+                                            <c:choose>
+                                                <c:when test="${combo.startDate.time > now}">
+                                                    <button class="btn btn-secondary btn-lg w-100" disabled>
+                                                        <i class="fas fa-clock"></i> Sắp mở bán
+                                                    </button>
+                                                    <small class="text-muted d-block text-center mt-2">
+                                                        Bắt đầu vào: <fmt:formatDate value="${combo.startDate}" pattern="HH:mm dd/MM/yyyy" />
+                                                    </small>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <button class="btn btn-success btn-lg w-100" onclick="addComboToCart('${combo.comboId}')">
+                                                        <i class="fas fa-shopping-cart"></i> Thêm vào giỏ
+                                                    </button>
+                                                </c:otherwise>
+                                            </c:choose>
+                                            <a href="${pageContext.request.contextPath}/combo-detail?comboId=${combo.comboId}"
+                                               class="btn btn-outline-success w-100">
+                                                <i class="fas fa-info-circle"></i> Xem chi tiết
+                                            </a>
+                                        </div>
                                     </div>
                                 </div>
                             </c:forEach>

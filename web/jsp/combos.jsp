@@ -139,18 +139,18 @@
     <main class="py-5">
         <div class="container">
             <h1 class="mb-4">Combo Khuyến Mãi</h1>
-            
+
             <c:if test="${empty combos}">
                 <div class="no-combos">
                     <i class="fas fa-box-open fa-3x mb-3 text-muted"></i>
                     <h3 class="text-muted">Hiện chưa có combo khuyến mãi nào</h3>
                 </div>
             </c:if>
-            
+
             <div class="row g-4">
                 <c:forEach items="${combos}" var="combo">
                     <div class="col-md-6 col-lg-4">
-                        <div class="combo-card">
+                        <div class="combo-card" id="combo-${combo.comboId}">
                             <!-- Trạng thái combo -->
                             <c:set var="now" value="<%=new java.util.Date()%>" />
                             <c:choose>
@@ -192,32 +192,35 @@
                                     </div>
                                 </div>
                                 
-                                <!-- Nút mua combo -->
-                                <c:choose>
-                                    <c:when test="${combo.startDate.after(now)}">
-                                        <button class="btn btn-outline-warning w-100" disabled>
-                                            <i class="fas fa-clock me-2"></i>Sắp mở bán
-                                        </button>
-                                    </c:when>
-                                    <c:when test="${combo.endDate.before(now)}">
-                                        <button class="btn btn-outline-danger w-100" disabled>
-                                            <i class="fas fa-times-circle me-2"></i>Đã kết thúc
-                                        </button>
-                                    </c:when>
-                                    <c:when test="${combo.active}">
-                                        <button class="btn btn-success w-100 add-to-cart" data-combo-id="${combo.comboId}">
-                                            <i class="fas fa-shopping-cart me-2"></i>Thêm vào giỏ
-                                        </button>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <button class="btn btn-secondary w-100" disabled>
-                                            <i class="fas fa-ban me-2"></i>Không khả dụng
-                                        </button>
-                                    </c:otherwise>
-                                </c:choose>
+                                    <c:choose>
+                                        <c:when test="${combo.startDate.after(now)}">
+                                            <button class="btn btn-outline-warning w-100" disabled>
+                                                <i class="fas fa-clock me-2"></i>Sắp mở bán
+                                            </button>
+                                        </c:when>
+                                        <c:when test="${combo.endDate.before(now)}">
+                                            <button class="btn btn-outline-danger w-100" disabled>
+                                                <i class="fas fa-times-circle me-2"></i>Đã kết thúc
+                                            </button>
+                                        </c:when>
+                                        <c:when test="${combo.active}">
+                                            <button class="btn btn-success w-100 add-to-cart" data-combo-id="${combo.comboId}">
+                                                <i class="fas fa-shopping-cart me-2"></i>Thêm vào giỏ
+                                            </button>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <button class="btn btn-secondary w-100" disabled>
+                                                <i class="fas fa-ban me-2"></i>Không khả dụng
+                                            </button>
+                                        </c:otherwise>
+                                    </c:choose>
+                                    <a href="${pageContext.request.contextPath}/combo-detail?comboId=${combo.comboId}"
+                                       class="btn btn-outline-primary w-100" style="margin-top: 0.5rem;">
+                                        <i class="fas fa-info-circle me-2"></i>Xem chi tiết
+                                    </a>
+                                </div>
                             </div>
                         </div>
-                    </div>
                 </c:forEach>
             </div>
         </div>

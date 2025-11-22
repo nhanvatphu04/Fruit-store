@@ -95,7 +95,7 @@ main .container {
     z-index: 1;
 }
 
-.flash-sale-item {
+.combo-card {
     position: relative;
     background: white;
     padding: 20px;
@@ -104,11 +104,11 @@ main .container {
     transition: transform 0.3s ease;
 }
 
-.flash-sale-item:hover {
+.combo-card:hover {
     transform: translateY(-5px);
 }
 
-.flash-sale-item img {
+.combo-card img {
     width: 100%;
     height: auto;
     border-radius: 8px;
