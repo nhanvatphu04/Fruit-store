@@ -49,14 +49,34 @@ public class DashboardService {
     public Map<String, Integer> getTopSellingProducts(int limit) throws SQLException {
         List<ProductStats> stats = productStatsDAO.getTopSellingProducts(limit);
         Map<String, Integer> result = new HashMap<>();
-        
+
         for (ProductStats stat : stats) {
             Product product = productDAO.getProductById(stat.getProductId());
             if (product != null) {
                 result.put(product.getName(), stat.getTotalSold());
             }
         }
-        
+
         return result;
+    }
+
+    // Lấy doanh thu theo ngày
+    public Map<String, Double> getRevenueByDay(int days) throws SQLException {
+        return orderDAO.getRevenueByDay(days);
+    }
+
+    // Lấy doanh thu theo tháng
+    public Map<String, Double> getRevenueByMonth(int months) throws SQLException {
+        return orderDAO.getRevenueByMonth(months);
+    }
+
+    // Lấy top khách hàng
+    public List<models.CustomerStats> getTopCustomerStats(int limit) throws SQLException {
+        return orderDAO.getTopCustomers(limit);
+    }
+
+    // Lấy lịch sử mua hàng của khách hàng
+    public List<Order> getCustomerOrderHistory(int userId, int limit) throws SQLException {
+        return orderDAO.getCustomerPurchaseHistory(userId, limit);
     }
 }

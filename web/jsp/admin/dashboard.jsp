@@ -73,6 +73,24 @@
                 </div>
             </div>
 
+            <!-- Revenue Growth Chart -->
+            <div class="row mt-4">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="card-title mb-0">Revenue Growth</h5>
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-sm btn-outline-primary active" id="btnByDay">By Day</button>
+                                <button type="button" class="btn btn-sm btn-outline-primary" id="btnByMonth">By Month</button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="revenueChart" style="height: 300px;"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Recent Orders Table -->
             <div class="row mt-4">
                 <div class="col-md-8">
@@ -124,6 +142,43 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Top Customers Table -->
+            <div class="row mt-4">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Top Customers</h5>
+                        </div>
+                        <div class="card-body">
+                            <table id="topCustomersTable" class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Customer Name</th>
+                                        <th>Username</th>
+                                        <th>Total Orders</th>
+                                        <th>Total Spend</th>
+                                        <th>Last Order</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <c:forEach items="${topCustomers}" var="customer" varStatus="status">
+                                        <tr>
+                                            <td>${status.index + 1}</td>
+                                            <td>${customer.fullName != null ? customer.fullName : '-'}</td>
+                                            <td>${customer.username}</td>
+                                            <td>${customer.totalOrders}</td>
+                                            <td>đ${customer.totalSpend}</td>
+                                            <td>${customer.lastOrderDate}</td>
+                                        </tr>
+                                    </c:forEach>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Back to Top Button -->
@@ -140,12 +195,18 @@
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         
         <script>
-            // Initialize DataTable and Back to Top button
+            // Initialize DataTables
             $(document).ready(function() {
                 $('#recentOrdersTable').DataTable({
                     order: [[4, 'desc']], // Sort by date column descending
                     pageLength: 5,
                     lengthMenu: [[5, 10, 25, 50], [5, 10, 25, 50]]
+                });
+
+                $('#topCustomersTable').DataTable({
+                    order: [[4, 'desc']], // Sort by total spend descending
+                    pageLength: 10,
+                    lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]]
                 });
 
                 // Back to Top button functionality
@@ -165,7 +226,6 @@
             
             // Top Products Chart
             const ctx = document.getElementById('topProductsChart').getContext('2d');
-            // Parse JSON strings thành mảng JavaScript
             const labels = JSON.parse('${topProductsLabels}');
             const data = JSON.parse('${topProductsData}');
             
@@ -195,6 +255,80 @@
                         }
                     },
                     cutout: '70%'
+                }
+            });
+
+            // Revenue Chart with Day/Month Toggle
+            const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+            
+            // Parse data from server
+            const revenueDayLabels = JSON.parse('${revenueDayLabels}');
+            const revenueDayData = JSON.parse('${revenueDayData}');
+            const revenueMonthLabels = JSON.parse('${revenueMonthLabels}');
+            const revenueMonthData = JSON.parse('${revenueMonthData}');
+            
+            let currentMode = 'day';
+            
+            const revenueChart = new Chart(revenueCtx, {
+                type: 'line',
+                data: {
+                    labels: revenueDayLabels,
+                    datasets: [{
+                        label: 'Revenue (đ)',
+                        data: revenueDayData,
+                        borderColor: '#198754',
+                        backgroundColor: 'rgba(25, 135, 84, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        },
+                        title: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return 'đ' + value.toLocaleString();
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Toggle between day and month view
+            document.getElementById('btnByDay').addEventListener('click', function() {
+                if (currentMode !== 'day') {
+                    currentMode = 'day';
+                    revenueChart.data.labels = revenueDayLabels;
+                    revenueChart.data.datasets[0].data = revenueDayData;
+                    revenueChart.update();
+                    
+                    document.getElementById('btnByDay').classList.add('active');
+                    document.getElementById('btnByMonth').classList.remove('active');
+                }
+            });
+
+            document.getElementById('btnByMonth').addEventListener('click', function() {
+                if (currentMode !== 'month') {
+                    currentMode = 'month';
+                    revenueChart.data.labels = revenueMonthLabels;
+                    revenueChart.data.datasets[0].data = revenueMonthData;
+                    revenueChart.update();
+                    
+                    document.getElementById('btnByMonth').classList.add('active');
+                    document.getElementById('btnByDay').classList.remove('active');
                 }
             });
         </script>

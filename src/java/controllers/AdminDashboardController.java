@@ -14,7 +14,7 @@ import models.User;
 import services.DashboardService;
 import com.google.gson.Gson;
 
-@WebServlet(name = "AdminDashboardController", urlPatterns = {"/admin/dashboard"})
+@WebServlet(name = "AdminDashboardController", urlPatterns = { "/admin/dashboard" })
 public class AdminDashboardController extends HttpServlet {
     private final DashboardService dashboardService;
     private final Gson gson;
@@ -34,23 +34,30 @@ public class AdminDashboardController extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/jsp/error/403.jsp");
             return;
         }
-        
+
         try {
             // Lấy dữ liệu thống kê
             int totalUsers = dashboardService.getTotalUsers();
             int totalOrders = dashboardService.getTotalOrders();
             double totalRevenue = dashboardService.getTotalRevenue();
-            
+
             // Lấy danh sách đơn hàng gần đây
             List<Order> recentOrders = dashboardService.getRecentOrders(10);
-            
+
             // Lấy danh sách sản phẩm bán chạy nhất
             Map<String, Integer> topProducts = dashboardService.getTopSellingProducts(5);
-            
+
             // Chuyển đổi dữ liệu sản phẩm hàng đầu cho biểu đồ
             String[] labels = topProducts.keySet().toArray(new String[0]);
             Integer[] data = topProducts.values().toArray(new Integer[0]);
-            
+
+            // Lấy dữ liệu doanh thu theo ngày và tháng
+            Map<String, Double> revenueByDay = dashboardService.getRevenueByDay(30);
+            Map<String, Double> revenueByMonth = dashboardService.getRevenueByMonth(12);
+
+            // Lấy top khách hàng
+            List<models.CustomerStats> topCustomers = dashboardService.getTopCustomerStats(10);
+
             // Đặt thuộc tính cho JSP
             request.setAttribute("totalUsers", totalUsers);
             request.setAttribute("totalOrders", totalOrders);
@@ -58,11 +65,20 @@ public class AdminDashboardController extends HttpServlet {
             request.setAttribute("recentOrders", recentOrders);
             request.setAttribute("topProductsLabels", gson.toJson(labels));
             request.setAttribute("topProductsData", gson.toJson(data));
-            
+
+            // Dữ liệu cho biểu đồ doanh thu
+            request.setAttribute("revenueDayLabels", gson.toJson(revenueByDay.keySet()));
+            request.setAttribute("revenueDayData", gson.toJson(revenueByDay.values()));
+            request.setAttribute("revenueMonthLabels", gson.toJson(revenueByMonth.keySet()));
+            request.setAttribute("revenueMonthData", gson.toJson(revenueByMonth.values()));
+
+            // Top khách hàng
+            request.setAttribute("topCustomers", topCustomers);
+
             // Chuyển tiếp đến bảng điều khiển
             request.getRequestDispatcher("/jsp/admin/dashboard.jsp")
-                  .forward(request, response);
-            
+                    .forward(request, response);
+
         } catch (SQLException e) {
             // Log error and forward to error page
             e.printStackTrace();
