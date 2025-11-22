@@ -16,6 +16,7 @@ import java.io.IOException;
 public class ProfileController extends HttpServlet {
     private AuthService authService;
     private UserService userService;
+    
     @Override
     public void init() throws ServletException {
         super.init();
@@ -54,7 +55,7 @@ public class ProfileController extends HttpServlet {
         String email = request.getParameter("email");
         String fullName = request.getParameter("fullName");
         String phone = request.getParameter("phone");
-        String address = request.getParameter("address");
+        String address = buildFullAddress(request);
         String currentPassword = request.getParameter("currentPassword");
         String newPassword = request.getParameter("newPassword");
         
@@ -115,6 +116,57 @@ public class ProfileController extends HttpServlet {
         }
         
         request.getRequestDispatcher("/jsp/profile.jsp").forward(request, response);
+    }
+    
+    /**
+     * Build full address from individual components or use combined address
+     * Supports Province Open API integration with backward compatibility
+     * 
+     * @param request HttpServletRequest containing address parameters
+     * @return Full address string
+     */
+    private String buildFullAddress(HttpServletRequest request) {
+        // First, check if combined address is already provided (from hidden field in JSP)
+        String combinedAddress = request.getParameter("address");
+        if (combinedAddress != null && !combinedAddress.trim().isEmpty()) {
+            return combinedAddress.trim();
+        }
+        
+        // Otherwise, try to build from individual components (backward compatibility)
+        String detailedAddress = request.getParameter("detailedAddress");
+        String ward = request.getParameter("ward");
+        String district = request.getParameter("district");
+        String province = request.getParameter("province");
+        
+        // Build address from components
+        StringBuilder addressBuilder = new StringBuilder();
+        
+        if (detailedAddress != null && !detailedAddress.trim().isEmpty()) {
+            addressBuilder.append(detailedAddress.trim());
+        }
+        
+        if (ward != null && !ward.trim().isEmpty()) {
+            if (addressBuilder.length() > 0) {
+                addressBuilder.append(", ");
+            }
+            addressBuilder.append(ward.trim());
+        }
+        
+        if (district != null && !district.trim().isEmpty()) {
+            if (addressBuilder.length() > 0) {
+                addressBuilder.append(", ");
+            }
+            addressBuilder.append(district.trim());
+        }
+        
+        if (province != null && !province.trim().isEmpty()) {
+            if (addressBuilder.length() > 0) {
+                addressBuilder.append(", ");
+            }
+            addressBuilder.append(province.trim());
+        }
+        
+        return addressBuilder.toString();
     }
 
 }
