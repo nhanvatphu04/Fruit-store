@@ -1,8 +1,8 @@
-# 🍎 Fruit Store
+# Fruit Store
 
 Hệ thống website bán trái cây trực tuyến được xây dựng bằng Java (JSP/Servlet).
 
-## 📋 Tổng quan
+## Tổng quan
 
 - **Công nghệ:** Java (JSP + Servlet + JSTL + EL)
 - **Database:** MySQL
@@ -10,29 +10,29 @@ Hệ thống website bán trái cây trực tuyến được xây dựng bằng 
 - **UI Framework:** Bootstrap 5
 - **Thư viện bổ sung:** jQuery, FontAwesome, SweetAlert2
 
-## 🌟 Tính năng chính
+## Tính năng chính
 
-### 👥 Người dùng
+### Người dùng
 - Xem danh sách sản phẩm, tìm kiếm với autocomplete
 - Thêm sản phẩm vào giỏ hàng, quản lý giỏ hàng
 - Áp dụng mã giảm giá khi thanh toán
 - Theo dõi đơn hàng
 
-### 👨‍💼 Quản trị viên
+### Quản trị viên
 - Dashboard tổng quan
 - Quản lý sản phẩm, danh mục
 - Quản lý đơn hàng
 - Quản lý mã giảm giá, combo
 - Quản lý người dùng
 
-## 🎨 Giao diện
+## Giao diện
 
 - **Màu sắc chủ đạo:** Xanh lá (Green) + Cam/Vàng (Orange/Yellow)
 - **Font chữ:** Roboto, Open Sans, Lato
 - **Phong cách:** Clean, nhiều khoảng trắng
 - **Components:** Bootstrap Cards, Sliders
 
-## 🏗️ Kiến trúc
+## Kiến trúc
 
 Hệ thống được xây dựng theo mô hình MVC:
 
@@ -42,7 +42,7 @@ Client (Browser)
 JSP (View) ←→ Servlet (Controller) ←→ Service Layer ←→ DAO Layer ←→ MySQL
 ```
 
-## 📦 Thư viện sử dụng
+## Thư viện sử dụng
 
 - `jakarta.servlet-api-5.0.0.jar`: Servlet API
 - `jakarta.servlet.jsp.jstl-2.0.0.jar`: JSTL support
@@ -50,11 +50,11 @@ JSP (View) ←→ Servlet (Controller) ←→ Service Layer ←→ DAO Layer ←
 - `gson-2.10.1.jar`: JSON processing
 - `jakarta.mail-2.0.2.jar`: Email support
 
-## 👥 Tác giả
+## Tác giả
 
 dxtruong16a4
 ...
 
-## 📄 License
+## License
 
 Dự án này được phân phối dưới [Giấy phép MIT](LICENSE).
