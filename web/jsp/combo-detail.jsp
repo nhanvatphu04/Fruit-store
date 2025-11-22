@@ -55,6 +55,45 @@
             font-weight: bold;
             color: var(--secondary-color);
         }
+
+        .combo-products-title {
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .combo-product-card {
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            padding: 0.75rem;
+            height: 100%;
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .combo-product-image {
+            width: 70px;
+            height: 70px;
+            border-radius: 8px;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+
+        .combo-product-name {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .combo-product-quantity {
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        .combo-product-price {
+            font-size: 0.9rem;
+            color: var(--secondary-color);
+            font-weight: 600;
+        }
     </style>
 </head>
 <body class="bg-light">
@@ -150,6 +189,30 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Products included in combo -->
+                <c:if test="${not empty comboProducts}">
+                    <h3 class="combo-products-title">Sản phẩm trong combo</h3>
+                    <div class="row g-3 mt-1">
+                        <c:forEach var="item" items="${comboProducts}">
+                            <c:set var="product" value="${item.product}" />
+                            <div class="col-md-6 col-lg-4">
+                                <div class="combo-product-card">
+                                    <img src="${product.imageUrl}" alt="${product.name}" class="combo-product-image">
+                                    <div class="flex-grow-1">
+                                        <div class="combo-product-name">${product.name}</div>
+                                        <div class="combo-product-quantity">
+                                            Số lượng: x${item.quantity}
+                                        </div>
+                                        <div class="combo-product-price">
+                                            <fmt:formatNumber value="${product.price}" type="currency" currencyCode="VND"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </c:forEach>
+                    </div>
+                </c:if>
             </c:if>
         </div>
     </main>
@@ -200,4 +263,3 @@
     </script>
 </body>
 </html>
-
