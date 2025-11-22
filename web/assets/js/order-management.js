@@ -177,8 +177,8 @@ $(document).ready(function() {
         });
     });
 
-    // Update Order Status
-    $('.update-status').click(function() {
+    // Update Order Status - Using event delegation for DataTables compatibility
+    $(document).on('click', '.update-status', function() {
         const orderId = $(this).data('id');
         const currentStatus = $(this).closest('tr').find('.badge').text().trim();
         

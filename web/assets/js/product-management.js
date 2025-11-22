@@ -139,8 +139,8 @@ $(document).ready(function() {
         });
     });
 
-    // Edit Product Button Click
-    $('.edit-product').click(function() {
+    // Edit Product Button Click - Using event delegation for DataTables compatibility
+    $(document).on('click', '.edit-product', function() {
         const productId = $(this).data('id');
         
         // Fetch product data
@@ -235,8 +235,8 @@ $(document).ready(function() {
         });
     });
 
-    // Delete Product Button Click
-    $('.delete-product').click(function() {
+    // Delete Product Button Click - Using event delegation for DataTables compatibility
+    $(document).on('click', '.delete-product', function() {
         const productId = $(this).data('id');
         
         Swal.fire({
