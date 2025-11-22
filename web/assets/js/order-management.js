@@ -79,7 +79,7 @@ $(document).ready(function() {
                 const customerName = customer.fullName || customer.username || 'N/A';
                 const customerEmail = customer.email || 'N/A';
                 const customerPhone = customer.phone || 'N/A';
-                const customerAddress = customer.address || response.shippingAddress || 'N/A';
+                const customerAddress = response.shippingAddress || customer.address || 'N/A';
 
                 $('#detailCustomerName').text(customerName);
                 $('#detailCustomerEmail').text(customerEmail);

@@ -107,13 +107,42 @@
                                 <p class="mb-2"><strong>Email:</strong> ${user.email}</p>
                                 <p class="mb-2"><strong>Số điện thoại:</strong> ${user.phone}</p>
 
+                                <!-- Địa chỉ: tỉnh / quận / phường + chi tiết -->
+                                <div class="row mt-3 mb-3">
+                                    <div class="col-md-4">
+                                        <label for="province" class="form-label">Tỉnh/Thành phố</label>
+                                        <select class="form-select" id="province" name="province">
+                                            <option value="">Chọn Tỉnh/Thành phố</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="district" class="form-label">Quận/Huyện</label>
+                                        <select class="form-select" id="district" name="district" disabled>
+                                            <option value="">Chọn Quận/Huyện</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="ward" class="form-label">Phường/Xã</label>
+                                        <select class="form-select" id="ward" name="ward" disabled>
+                                            <option value="">Chọn Phường/Xã</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="detailedAddress" class="form-label">Địa chỉ chi tiết</label>
+                                    <input type="text" class="form-control" id="detailedAddress"
+                                           name="detailedAddress" placeholder="Số nhà, tên đường...">
+                                </div>
+
                                 <div class="mt-3">
-                                    <label class="form-label">Địa chỉ giao hàng</label>
+                                    <label class="form-label">Địa chỉ giao hàng (sẽ dùng cho đơn hàng)</label>
                                     <textarea class="form-control" id="shippingAddress"
-                                              name="shippingAddress" rows="2"
+                                              name="shippingAddressDisplay" rows="2"
                                               placeholder="Nhập địa chỉ giao hàng">${shippingAddress}</textarea>
                                     <small class="text-muted">
-                                        Địa chỉ mặc định lấy từ tài khoản của bạn. Bạn có thể chỉnh sửa cho đơn hàng này.
+                                        Địa chỉ mặc định lấy từ tài khoản của bạn. Bạn có thể chọn Tỉnh/Quận/Phường
+                                        và nhập chi tiết, hệ thống sẽ tự ghép thành địa chỉ giao hàng.
                                     </small>
                                 </div>
                             </div>
@@ -213,7 +242,8 @@
                         </div>
 
                         <!-- Nút xác nhận -->
-                        <form method="POST" action="${pageContext.request.contextPath}/checkout">
+                        <form method="POST" action="${pageContext.request.contextPath}/checkout" id="checkoutForm">
+                            <input type="hidden" id="shippingAddressHidden" name="shippingAddress" value="${shippingAddress}">
                             <button type="submit" class="btn btn-success confirm-btn">
                                 <i class="fas fa-check me-2"></i>Xác nhận đơn hàng
                             </button>
@@ -238,6 +268,136 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        $(document).ready(function () {
+            const API_BASE_URL = 'https://provinces.open-api.vn/api';
+
+            loadProvinces();
+
+            function loadProvinces() {
+                $.ajax({
+                    url: API_BASE_URL + '/p/',
+                    method: 'GET',
+                    success: function (data) {
+                        $('#province').empty().append('<option value="">Chọn Tỉnh/Thành phố</option>');
+                        data.forEach(function (province) {
+                            $('#province').append(
+                                $('<option></option>')
+                                    .attr('value', province.code)
+                                    .attr('data-name', province.name)
+                                    .text(province.name)
+                            );
+                        });
+                    },
+                    error: function () {
+                        console.error('Không thể tải danh sách tỉnh/thành phố');
+                    }
+                });
+            }
+
+            $('#province').change(function () {
+                const provinceCode = $(this).val();
+
+                $('#district').empty().append('<option value="">Chọn Quận/Huyện</option>').prop('disabled', true);
+                $('#ward').empty().append('<option value="">Chọn Phường/Xã</option>').prop('disabled', true);
+
+                if (provinceCode) {
+                    loadDistricts(provinceCode);
+                }
+                updateFullAddress();
+            });
+
+            function loadDistricts(provinceCode) {
+                $.ajax({
+                    url: API_BASE_URL + '/p/' + provinceCode + '?depth=2',
+                    method: 'GET',
+                    success: function (data) {
+                        $('#district').empty().append('<option value="">Chọn Quận/Huyện</option>');
+                        if (data.districts) {
+                            data.districts.forEach(function (district) {
+                                $('#district').append(
+                                    $('<option></option>')
+                                        .attr('value', district.code)
+                                        .attr('data-name', district.name)
+                                        .text(district.name)
+                                );
+                            });
+                            $('#district').prop('disabled', false);
+                        }
+                    },
+                    error: function () {
+                        console.error('Không thể tải danh sách quận/huyện');
+                    }
+                });
+            }
+
+            $('#district').change(function () {
+                const districtCode = $(this).val();
+
+                $('#ward').empty().append('<option value="">Chọn Phường/Xã</option>').prop('disabled', true);
+
+                if (districtCode) {
+                    loadWards(districtCode);
+                }
+                updateFullAddress();
+            });
+
+            function loadWards(districtCode) {
+                $.ajax({
+                    url: API_BASE_URL + '/d/' + districtCode + '?depth=2',
+                    method: 'GET',
+                    success: function (data) {
+                        $('#ward').empty().append('<option value="">Chọn Phường/Xã</option>');
+                        if (data.wards) {
+                            data.wards.forEach(function (ward) {
+                                $('#ward').append(
+                                    $('<option></option>')
+                                        .attr('value', ward.code)
+                                        .attr('data-name', ward.name)
+                                        .text(ward.name)
+                                );
+                            });
+                            $('#ward').prop('disabled', false);
+                        }
+                    },
+                    error: function () {
+                        console.error('Không thể tải danh sách phường/xã');
+                    }
+                });
+            }
+
+            $('#ward').change(function () {
+                updateFullAddress();
+            });
+
+            $('#detailedAddress').on('input', function () {
+                updateFullAddress();
+            });
+
+            function updateFullAddress() {
+                const detailedAddress = $('#detailedAddress').val().trim();
+                const wardName = $('#ward option:selected').data('name') || '';
+                const districtName = $('#district option:selected').data('name') || '';
+                const provinceName = $('#province option:selected').data('name') || '';
+
+                const parts = [detailedAddress, wardName, districtName, provinceName].filter(function (p) { return p; });
+                const fullAddress = parts.join(', ');
+
+                if (fullAddress) {
+                    $('#shippingAddress').val(fullAddress);
+                    $('#shippingAddressHidden').val(fullAddress);
+                }
+            }
+
+            // Ensure shippingAddress is up-to-date before submit
+            $('#checkoutForm').on('submit', function () {
+                updateFullAddress();
+                // Keep hidden field in sync even if user edited textarea manually
+                $('#shippingAddressHidden').val($('#shippingAddress').val().trim());
+            });
+        });
+    </script>
 </body>
 </html>
 
