@@ -89,6 +89,7 @@ CREATE TABLE orders (
     order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     discount_code VARCHAR(50),
     discount_amount DECIMAL(10,2) DEFAULT 0,
+    shipping_address TEXT,
     FOREIGN KEY (user_id) REFERENCES users(user_id),
     INDEX idx_discount_code (discount_code)
 );

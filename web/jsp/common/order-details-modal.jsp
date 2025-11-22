@@ -21,6 +21,7 @@
                         <p class="mb-1"><strong>Tên:</strong> <span id="detailCustomerName"></span></p>
                         <p class="mb-1"><strong>Email:</strong> <span id="detailCustomerEmail"></span></p>
                         <p class="mb-1"><strong>Điện thoại:</strong> <span id="detailCustomerPhone"></span></p>
+                        <p class="mb-1"><strong>Địa chỉ giao hàng:</strong> <span id="detailCustomerAddress"></span></p>
                     </div>
                 </div>
 
@@ -61,4 +62,3 @@
         </div>
     </div>
 </div>
-

@@ -35,6 +35,7 @@ $(document).ready(function() {
         $('#detailCustomerName').text('');
         $('#detailCustomerEmail').text('');
         $('#detailCustomerPhone').text('');
+        $('#detailCustomerAddress').text('');
         $('#detailDiscountCode').text('');
         $('#detailDiscountAmount').text('');
         $('#discountSection').hide();
@@ -78,10 +79,12 @@ $(document).ready(function() {
                 const customerName = customer.fullName || customer.username || 'N/A';
                 const customerEmail = customer.email || 'N/A';
                 const customerPhone = customer.phone || 'N/A';
+                const customerAddress = customer.address || response.shippingAddress || 'N/A';
 
                 $('#detailCustomerName').text(customerName);
                 $('#detailCustomerEmail').text(customerEmail);
                 $('#detailCustomerPhone').text(customerPhone);
+                $('#detailCustomerAddress').text(customerAddress);
 
                 // Discount info
                 if (response.discountCode && parseFloat(response.discountAmount || 0) > 0) {

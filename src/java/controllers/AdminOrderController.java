@@ -132,6 +132,7 @@ public class AdminOrderController extends HttpServlet {
                     orderDetails.put("orderDate", order.getOrderDate() != null ? order.getOrderDate().toString() : "");
                     orderDetails.put("totalAmount", order.getTotalAmount() != null ? order.getTotalAmount().toString() : "0");
                     orderDetails.put("status", order.getStatus() != null ? order.getStatus() : "unknown");
+                    orderDetails.put("shippingAddress", order.getShippingAddress());
                     
                     // Tạo customer map để đảm bảo serialization đúng
                     Map<String, Object> customerMap = new HashMap<>();
@@ -141,6 +142,7 @@ public class AdminOrderController extends HttpServlet {
                         customerMap.put("fullName", user.getFullName() != null ? user.getFullName() : "");
                         customerMap.put("email", user.getEmail() != null ? user.getEmail() : "");
                         customerMap.put("phone", user.getPhone() != null ? user.getPhone() : "");
+                        customerMap.put("address", user.getAddress() != null ? user.getAddress() : "");
                     }
                     orderDetails.put("customer", customerMap);
 

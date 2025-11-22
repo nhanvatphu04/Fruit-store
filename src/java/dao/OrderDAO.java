@@ -62,7 +62,7 @@ public class OrderDAO {
 
 	// Thêm đơn hàng
 	public boolean addOrder(Order order) {
-		String sql = "INSERT INTO orders (user_id, total_amount, status, discount_code, discount_amount) VALUES (?, ?, ?, ?, ?)";
+		String sql = "INSERT INTO orders (user_id, total_amount, status, discount_code, discount_amount, shipping_address) VALUES (?, ?, ?, ?, ?, ?)";
 		try (Connection conn = DbConnect.getInstance().getConnection();
 			 PreparedStatement ps = conn.prepareStatement(sql)) {
 			ps.setInt(1, order.getUserId());
@@ -70,6 +70,7 @@ public class OrderDAO {
 			ps.setString(3, order.getStatus());
 			ps.setString(4, order.getDiscountCode());
 			ps.setBigDecimal(5, order.getDiscountAmount());
+			ps.setString(6, order.getShippingAddress());
 			int rows = ps.executeUpdate();
 			return rows > 0;
 		} catch (Exception e) {
@@ -172,6 +173,11 @@ public class OrderDAO {
 		o.setOrderDate(rs.getTimestamp("order_date"));
 		o.setDiscountCode(rs.getString("discount_code"));
 		o.setDiscountAmount(rs.getBigDecimal("discount_amount"));
+		try {
+			o.setShippingAddress(rs.getString("shipping_address"));
+		} catch (SQLException ignored) {
+			// Cột có thể không tồn tại trên các DB chưa được migrate
+		}
 		return o;
 	}
 

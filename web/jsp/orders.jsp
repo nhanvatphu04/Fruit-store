@@ -233,6 +233,7 @@
                         $('#detailCustomerName').text(customer.fullName || customer.username || 'N/A');
                         $('#detailCustomerEmail').text(customer.email || 'N/A');
                         $('#detailCustomerPhone').text(customer.phone || 'N/A');
+                        $('#detailCustomerAddress').text(response.shippingAddress || customer.address || 'N/A');
                         
                         // Discount info
                         if (response.discountCode && response.discountAmount > 0) {

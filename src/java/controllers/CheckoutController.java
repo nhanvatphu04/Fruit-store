@@ -105,6 +105,9 @@ public class CheckoutController extends HttpServlet {
 
             BigDecimal total = subtotal.subtract(discount);
 
+            // Địa chỉ giao hàng (mặc định lấy từ user)
+            String shippingAddress = user.getAddress();
+
             // Set attributes cho JSP
             request.setAttribute("selectedItems", selectedItems);
             request.setAttribute("selectedCombos", selectedCombos);
@@ -112,6 +115,7 @@ public class CheckoutController extends HttpServlet {
             request.setAttribute("discount", discount);
             request.setAttribute("discountCode", appliedDiscountCode);
             request.setAttribute("total", total);
+            request.setAttribute("shippingAddress", shippingAddress);
             request.setAttribute("user", user);
 
             // Forward đến checkout.jsp
@@ -168,8 +172,15 @@ public class CheckoutController extends HttpServlet {
 
             BigDecimal total = subtotal.subtract(discount);
 
+            // Lấy địa chỉ giao hàng từ form (nếu có)
+            String shippingAddress = request.getParameter("shippingAddress");
+            if (shippingAddress == null || shippingAddress.trim().isEmpty()) {
+                shippingAddress = user.getAddress();
+            }
+
             // Tạo đơn hàng
             Order order = new Order(user.getUserId(), total, "pending", appliedDiscountCode, discount);
+            order.setShippingAddress(shippingAddress);
             
             if (!orderDAO.addOrder(order)) {
                 throw new Exception("Không thể tạo đơn hàng");

@@ -13,6 +13,7 @@ public class Order {
     private String userName;  // Thêm trường userName
     private String discountCode;  // Mã giảm giá được áp dụng
     private BigDecimal discountAmount;  // Số tiền giảm
+    private String shippingAddress; // Địa chỉ giao hàng
     private List<OrderItem> orderItems;  // Danh sách các mặt hàng trong đơn hàng
     private List<OrderCombo> orderCombos; // Danh sách combo trong đơn hàng
 
@@ -96,6 +97,14 @@ public class Order {
 
     public void setDiscountAmount(BigDecimal discountAmount) {
         this.discountAmount = discountAmount;
+    }
+
+    public String getShippingAddress() {
+        return shippingAddress;
+    }
+
+    public void setShippingAddress(String shippingAddress) {
+        this.shippingAddress = shippingAddress;
     }
 
     public List<OrderItem> getOrderItems() {

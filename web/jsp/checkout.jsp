@@ -105,7 +105,17 @@
                             <div class="card-body">
                                 <p class="mb-2"><strong>Tên:</strong> ${user.fullName}</p>
                                 <p class="mb-2"><strong>Email:</strong> ${user.email}</p>
-                                <p class="mb-0"><strong>Số điện thoại:</strong> ${user.phone}</p>
+                                <p class="mb-2"><strong>Số điện thoại:</strong> ${user.phone}</p>
+
+                                <div class="mt-3">
+                                    <label class="form-label">Địa chỉ giao hàng</label>
+                                    <textarea class="form-control" id="shippingAddress"
+                                              name="shippingAddress" rows="2"
+                                              placeholder="Nhập địa chỉ giao hàng">${shippingAddress}</textarea>
+                                    <small class="text-muted">
+                                        Địa chỉ mặc định lấy từ tài khoản của bạn. Bạn có thể chỉnh sửa cho đơn hàng này.
+                                    </small>
+                                </div>
                             </div>
                         </div>
 

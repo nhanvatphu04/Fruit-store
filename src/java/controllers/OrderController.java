@@ -123,6 +123,7 @@ public class OrderController extends HttpServlet {
                     orderDetails.put("status", order.getStatus() != null ? order.getStatus() : "unknown");
                     orderDetails.put("discountCode", order.getDiscountCode());
                     orderDetails.put("discountAmount", order.getDiscountAmount() != null ? order.getDiscountAmount().toString() : "0");
+                    orderDetails.put("shippingAddress", order.getShippingAddress());
                     
                     // Customer info
                     Map<String, Object> customerMap = new HashMap<>();
@@ -131,6 +132,7 @@ public class OrderController extends HttpServlet {
                     customerMap.put("fullName", user.getFullName() != null ? user.getFullName() : "");
                     customerMap.put("email", user.getEmail() != null ? user.getEmail() : "");
                     customerMap.put("phone", user.getPhone() != null ? user.getPhone() : "");
+                    customerMap.put("address", user.getAddress() != null ? user.getAddress() : "");
                     orderDetails.put("customer", customerMap);
                     
                     // Order items
