@@ -592,9 +592,11 @@
 
             // Thanh toán
             $('#checkoutBtn').click(function() {
-                // Kiểm tra xem có sản phẩm nào được chọn không
-                if($('.select-item:checked').length === 0) {
-                    Swal.fire('Thông báo', 'Vui lòng chọn ít nhất một sản phẩm để thanh toán', 'info');
+                // Kiểm tra xem có sản phẩm hoặc combo nào được chọn không
+                const selectedProducts = $('.select-item:checked').length;
+                const selectedCombos = $('.select-combo:checked').length;
+                if (selectedProducts === 0 && selectedCombos === 0) {
+                    Swal.fire('Thông báo', 'Vui lòng chọn ít nhất một sản phẩm hoặc combo để thanh toán', 'info');
                     return;
                 }
                 
