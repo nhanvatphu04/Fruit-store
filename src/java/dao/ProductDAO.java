@@ -12,7 +12,7 @@ public class ProductDAO {
 
 	// Lấy sản phẩm theo id
 	public Product getProductById(int id) {
-		String sql = "SELECT p.*, c.name as category_name FROM products p LEFT JOIN categories c ON p.category_id = c.category_id WHERE p.product_id = ?";
+		String sql = "SELECT p.*, c.name as category_name, COALESCE(ps.total_sold, 0) as total_sold FROM products p LEFT JOIN categories c ON p.category_id = c.category_id LEFT JOIN product_stats ps ON p.product_id = ps.product_id WHERE p.product_id = ?";
 		try (Connection conn = DbConnect.getInstance().getConnection();
 			 PreparedStatement ps = conn.prepareStatement(sql)) {
 			ps.setInt(1, id);
@@ -29,8 +29,9 @@ public class ProductDAO {
 	// Lấy tất cả sản phẩm
 	public List<Product> getAllProducts() {
 		List<Product> list = new ArrayList<>();
-		String sql = "SELECT p.*, c.name as category_name FROM products p "
-			+ "LEFT JOIN categories c ON p.category_id = c.category_id";
+		String sql = "SELECT p.*, c.name as category_name, COALESCE(ps.total_sold, 0) as total_sold FROM products p "
+			+ "LEFT JOIN categories c ON p.category_id = c.category_id "
+			+ "LEFT JOIN product_stats ps ON p.product_id = ps.product_id";
 		try (Connection conn = DbConnect.getInstance().getConnection();
 			 PreparedStatement ps = conn.prepareStatement(sql)) {
 			ResultSet rs = ps.executeQuery();
@@ -46,9 +47,10 @@ public class ProductDAO {
 	// Lấy sản phẩm bán chạy nhất
 	public List<Product> getBestSellers(int limit) {
 		List<Product> list = new ArrayList<>();
-		String sql = "SELECT p.*, c.name as category_name FROM products p " +
+		String sql = "SELECT p.*, c.name as category_name, COALESCE(ps.total_sold, 0) as total_sold FROM products p " +
 					"INNER JOIN order_items oi ON p.product_id = oi.product_id " +
 					"LEFT JOIN categories c ON p.category_id = c.category_id " +
+					"LEFT JOIN product_stats ps ON p.product_id = ps.product_id " +
 					"GROUP BY p.product_id " +
 					"ORDER BY SUM(oi.quantity) DESC " +
 					"LIMIT ?";
@@ -68,7 +70,7 @@ public class ProductDAO {
 	// Lấy sản phẩm mới nhất
 	public List<Product> getNewProducts(int limit) {
 		List<Product> list = new ArrayList<>();
-		String sql = "SELECT p.*, c.name as category_name FROM products p LEFT JOIN categories c ON p.category_id = c.category_id ORDER BY p.created_at DESC LIMIT ?";
+		String sql = "SELECT p.*, c.name as category_name, COALESCE(ps.total_sold, 0) as total_sold FROM products p LEFT JOIN categories c ON p.category_id = c.category_id LEFT JOIN product_stats ps ON p.product_id = ps.product_id ORDER BY p.created_at DESC LIMIT ?";
 		try (Connection conn = DbConnect.getInstance().getConnection();
 			 PreparedStatement ps = conn.prepareStatement(sql)) {
 			ps.setInt(1, limit);
@@ -85,7 +87,7 @@ public class ProductDAO {
 	// Lấy sản phẩm đang flash sale
 	public List<Product> getFlashSaleProducts(int limit) {
 		List<Product> list = new ArrayList<>();
-		String sql = "SELECT p.*, c.name as category_name FROM products p LEFT JOIN categories c ON p.category_id = c.category_id WHERE p.discount_percent > 0 ORDER BY p.discount_percent DESC LIMIT ?";
+		String sql = "SELECT p.*, c.name as category_name, COALESCE(ps.total_sold, 0) as total_sold FROM products p LEFT JOIN categories c ON p.category_id = c.category_id LEFT JOIN product_stats ps ON p.product_id = ps.product_id WHERE p.discount_percent > 0 ORDER BY p.discount_percent DESC LIMIT ?";
 		try (Connection conn = DbConnect.getInstance().getConnection();
 			 PreparedStatement ps = conn.prepareStatement(sql)) {
 			ps.setInt(1, limit);
@@ -102,7 +104,7 @@ public class ProductDAO {
 	// Lấy sản phẩm theo danh mục
 	public List<Product> getProductsByCategory(int categoryId) {
 		List<Product> list = new ArrayList<>();
-		String sql = "SELECT p.*, c.name as category_name FROM products p LEFT JOIN categories c ON p.category_id = c.category_id WHERE p.category_id = ?";
+		String sql = "SELECT p.*, c.name as category_name, COALESCE(ps.total_sold, 0) as total_sold FROM products p LEFT JOIN categories c ON p.category_id = c.category_id LEFT JOIN product_stats ps ON p.product_id = ps.product_id WHERE p.category_id = ?";
 		try (Connection conn = DbConnect.getInstance().getConnection();
 			 PreparedStatement ps = conn.prepareStatement(sql)) {
 			ps.setInt(1, categoryId);
@@ -124,7 +126,7 @@ public class ProductDAO {
 	// Tìm kiếm sản phẩm theo tên hoặc mô tả với giới hạn số lượng
 	public List<Product> searchProducts(String keyword, int limit) {
 		List<Product> list = new ArrayList<>();
-		String sql = "SELECT p.*, c.name as category_name FROM products p LEFT JOIN categories c ON p.category_id = c.category_id WHERE p.name LIKE ? OR p.description LIKE ? LIMIT ?";
+		String sql = "SELECT p.*, c.name as category_name, COALESCE(ps.total_sold, 0) as total_sold FROM products p LEFT JOIN categories c ON p.category_id = c.category_id LEFT JOIN product_stats ps ON p.product_id = ps.product_id WHERE p.name LIKE ? OR p.description LIKE ? LIMIT ?";
 		try (Connection conn = DbConnect.getInstance().getConnection();
 			 PreparedStatement ps = conn.prepareStatement(sql)) {
 			String kw = "%" + keyword + "%";
@@ -214,6 +216,14 @@ public class ProductDAO {
 		p.setNew(rs.getBoolean("is_new"));
 		p.setBestSeller(rs.getBoolean("is_best_seller"));
 		p.setCreatedAt(rs.getTimestamp("created_at"));
+		
+		// Đặt total_sold nếu có trong ResultSet
+		try {
+			p.setTotalSold(rs.getInt("total_sold"));
+		} catch (SQLException e) {
+			p.setTotalSold(0);
+		}
+		
 		return p;
 	}
 

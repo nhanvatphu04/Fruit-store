@@ -14,6 +14,7 @@ public class Product {
     private int discountPercent;
     private boolean isNew;
     private boolean isBestSeller;
+    private int totalSold;
     private Timestamp createdAt;
     private Category category = new Category();
     
@@ -130,6 +131,14 @@ public class Product {
         isBestSeller = bestSeller;
     }
 
+    public int getTotalSold() {
+        return totalSold;
+    }
+
+    public void setTotalSold(int totalSold) {
+        this.totalSold = totalSold;
+    }
+
     // Tính giá sau giảm giá
     public BigDecimal getDiscountedPrice() {
         if (discountPercent > 0) {
@@ -167,6 +176,7 @@ public class Product {
                 ", discountPercent=" + discountPercent +
                 ", isNew=" + isNew +
                 ", isBestSeller=" + isBestSeller +
+                ", totalSold=" + totalSold +
                 ", createdAt=" + createdAt +
                 '}';
     }

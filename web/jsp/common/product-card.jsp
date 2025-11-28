@@ -40,6 +40,11 @@
     flex-direction: column;
     justify-content: center;
 }
+
+.product-stats {
+    border-top: 1px solid #e9ecef;
+    padding-top: 0.75rem;
+}
 </style>
 
 <%-- Nhận product từ request --%>
@@ -87,10 +92,18 @@
                 </p>
             </c:if>
         </div>
+        <div class="product-stats mb-2">
+            <small class="d-block text-muted">
+                <i class="fas fa-box"></i> Tồn kho: <strong>${product.stockQuantity}</strong>
+            </small>
+            <small class="d-block text-muted">
+                <i class="fas fa-shopping-bag"></i> Đã bán: <strong>${product.totalSold > 0 ? product.totalSold : 0}</strong>
+            </small>
+        </div>
         <c:choose>
             <c:when test="${product.stockQuantity > 0}">
                 <button class="btn btn-success" 
-                        onclick="addToCart(${product.productId}, '${product.name}', '<fmt:formatNumber value="${product.onSale ? product.discountedPrice : product.price}" type="currency" currencyCode="VND"/>', ${product.stockQuantity}, '<fmt:formatNumber value="${product.price}" type="currency" currencyCode="VND"/>', ${product.discountPercent})"
+                        onclick="addToCart('${product.productId}', '${product.name}', '${product.onSale ? product.discountedPrice : product.price}', '${product.stockQuantity}', '${product.price}', '${product.discountPercent}')"
                         data-product-id="${product.productId}">
                     <i class="fas fa-shopping-cart"></i> Thêm vào giỏ
                 </button>

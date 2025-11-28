@@ -126,7 +126,7 @@
         $(function() {
             $('#addToCartBtn').click(function() {
                 // Lấy thông tin sản phẩm và giá
-                const productId = ${product.productId};
+                const productId = '${product.productId}';
                 const productName = $('.product-detail-title').text().trim();
                 const stockQuantity = parseInt('${product.stockQuantity}');
                 
