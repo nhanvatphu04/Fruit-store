@@ -195,9 +195,14 @@ $(document).ready(function() {
             confirmButtonText: 'Update',
             showLoaderOnConfirm: true,
             preConfirm: (status) => {
-                return $.post(contextPath + '/admin/orders/update-status', {
-                    orderId: orderId,
-                    status: status
+                return $.ajax({
+                    url: contextPath + '/admin/orders/update-status',
+                    type: 'POST',
+                    data: {
+                        orderId: orderId,
+                        status: status
+                    },
+                    dataType: 'json'
                 })
                 .then(response => {
                     if (!response.success) {
@@ -206,7 +211,13 @@ $(document).ready(function() {
                     return response;
                 })
                 .catch(error => {
-                    Swal.showValidationMessage(`Request failed: ${error}`);
+                    let errorMessage = 'Request failed';
+                    if (error.responseJSON && error.responseJSON.message) {
+                        errorMessage = error.responseJSON.message;
+                    } else if (error.message) {
+                        errorMessage = error.message;
+                    }
+                    Swal.showValidationMessage(errorMessage);
                 });
             },
             allowOutsideClick: () => !Swal.isLoading()
