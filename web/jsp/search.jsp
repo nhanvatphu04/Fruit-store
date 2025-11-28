@@ -13,8 +13,12 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- FontAwesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- jQuery UI CSS -->
+    <link href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css" rel="stylesheet">
     <!-- Custom CSS -->
     <link href="${pageContext.request.contextPath}/assets/css/style.css" rel="stylesheet">
+    <!-- Thêm contextPath cho JavaScript -->
+    <meta name="contextPath" content="${pageContext.request.contextPath}">
 </head>
 <body>
     <%@ include file="common/header.jsp" %>
@@ -51,7 +55,11 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- jQuery UI -->
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
     <!-- Import modal thêm vào giỏ hàng -->
     <%@ include file="common/add-to-cart-modal.jsp" %>
+    <!-- Custom JS -->
+    <script src="${pageContext.request.contextPath}/assets/js/main.js"></script>
 </body>
 </html>

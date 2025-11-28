@@ -18,6 +18,8 @@
     <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
     <!-- Custom CSS -->
     <link href="${pageContext.request.contextPath}/assets/css/style.css" rel="stylesheet">
+    <!-- Thêm contextPath cho JavaScript -->
+    <meta name="contextPath" content="${pageContext.request.contextPath}">
     <style>
         .category-sidebar {
             background: #fff;
@@ -241,6 +243,8 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- Import modal thêm vào giỏ hàng -->
     <%@ include file="common/add-to-cart-modal.jsp" %>
+    <!-- Custom JS -->
+    <script src="${pageContext.request.contextPath}/assets/js/main.js"></script>
     <script>
         $(function() {
             const urlParams = new URLSearchParams(window.location.search);
