@@ -49,10 +49,8 @@ public class AdminOrderController extends HttpServlet {
 
         String path = request.getServletPath();
         String pathInfo = request.getPathInfo();
-        System.out.println("DEBUG: ServletPath=" + path + ", PathInfo=" + pathInfo);
         
         if (path.equals("/admin/orders")) {
-            System.out.println("DEBUG: Handling /admin/orders");
             // Hiển thị trang quản lý đơn hàng
             List<Order> orders = orderDAO.getAllOrders();
 
@@ -67,7 +65,6 @@ public class AdminOrderController extends HttpServlet {
             request.getRequestDispatcher("/jsp/admin/orders.jsp").forward(request, response);
         }
         else if (path.equals("/admin/orders/by-status")) {
-            System.out.println("DEBUG: Handling /admin/orders/by-status");
             // API lấy đơn hàng theo trạng thái
             String status = request.getParameter("status");
             List<Order> orders = status != null && !status.isEmpty() ?
@@ -79,15 +76,11 @@ public class AdminOrderController extends HttpServlet {
             response.getWriter().write(gson.toJson(orders));
         }
         else if (path.startsWith("/admin/orders/details")) {
-            System.out.println("DEBUG: Handling /admin/orders/details");
             // API lấy chi tiết đơn hàng
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
 
             try {
-                System.out.println("Processing order details request for path: " + path);
-                System.out.println("PathInfo: " + pathInfo);
-
                 // Extract order ID from pathInfo (e.g., "/1" from "/admin/orders/details/1")
                 int orderId;
                 if (pathInfo != null && !pathInfo.isEmpty() && !pathInfo.equals("/")) {
@@ -96,32 +89,25 @@ public class AdminOrderController extends HttpServlet {
                     // Fallback: try to extract from path
                     orderId = Integer.parseInt(path.substring(path.lastIndexOf('/') + 1));
                 }
-                System.out.println("Parsed order ID: " + orderId);
                 
                 Order order = orderDAO.getOrderById(orderId);
-                System.out.println("Order retrieved: " + (order != null ? "Yes (ID: " + order.getOrderId() + ")" : "No (null)"));
 
                 if (order != null) {
                     // Lấy thông tin người dùng
                     User user = userDAO.getUserById(order.getUserId());
-                    System.out.println("User retrieved: " + (user != null ? "Yes (ID: " + user.getUserId() + ")" : "No (null)"));
 
                     // Lấy danh sách sản phẩm trong đơn hàng
                     List<OrderItem> items = order.getOrderItems();
                     if (items == null) {
                         items = new ArrayList<>();
                     }
-                    System.out.println("Order items count: " + items.size());
 
                     // Lấy thông tin sản phẩm cho mỗi item
                     for (OrderItem item : items) {
                         try {
                             Product product = productDAO.getProductById(item.getProductId());
                             item.setProduct(product);
-                            System.out.println("Loaded product for item: " + item.getProductId() + 
-                                             " - " + (product != null ? product.getName() : "null"));
                         } catch (Exception e) {
-                            System.err.println("Error loading product " + item.getProductId() + ": " + e.getMessage());
                             e.printStackTrace();
                         }
                     }
@@ -203,15 +189,11 @@ public class AdminOrderController extends HttpServlet {
 
                     // Gửi response dạng JSON
                     String jsonResponse = gson.toJson(orderDetails);
-                    System.out.println("Order details JSON length: " + jsonResponse.length());
-                    System.out.println("Order details response: " + jsonResponse);
                     try (java.io.PrintWriter out = response.getWriter()) {
                         out.write(jsonResponse);
                         out.flush();
-                        System.out.println("Response written and flushed successfully");
                     }
                 } else {
-                    System.out.println("Order not found, returning 404");
                     response.setStatus(HttpServletResponse.SC_NOT_FOUND);
                     Map<String, String> error = new HashMap<>();
                     error.put("message", "Order not found");
@@ -245,7 +227,6 @@ public class AdminOrderController extends HttpServlet {
         }
         else {
             // Unmatched path
-            System.out.println("Unmatched path in doGet: " + path);
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");

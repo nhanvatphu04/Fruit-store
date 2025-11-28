@@ -149,8 +149,6 @@ public class CartController extends HttpServlet {
             String productIdStr = request.getParameter("productId");
             String quantityStr = request.getParameter("quantity");
             
-            System.out.println("Received parameters - productId: " + productIdStr + ", quantity: " + quantityStr);
-            
             if (productIdStr == null || productIdStr.trim().isEmpty()) {
                 result.put("success", false);
                 result.put("message", "ID sản phẩm không được để trống");
@@ -173,7 +171,6 @@ public class CartController extends HttpServlet {
             result.put("message", success ? "Đã thêm vào giỏ hàng" : "Không thể thêm vào giỏ hàng");
             
         } catch (NumberFormatException e) {
-            System.out.println("NumberFormatException: " + e.getMessage());
             result.put("success", false);
             result.put("message", "Dữ liệu không hợp lệ: " + e.getMessage());
         }

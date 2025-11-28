@@ -92,13 +92,11 @@ public class OrderDAO {
 		
 		// Only allow transitions from pending
 		if (!"pending".equals(currentStatus)) {
-			System.out.println("ERROR: Cannot change status from " + currentStatus + " to " + newStatus);
 			return false;
 		}
 		
 		// Only allow transitions to completed or cancelled
 		if (!"completed".equals(newStatus) && !"cancelled".equals(newStatus)) {
-			System.out.println("ERROR: Invalid status transition to " + newStatus);
 			return false;
 		}
 
@@ -249,16 +247,10 @@ public class OrderDAO {
 		ComboDAO comboDAO = new ComboDAO();
 		List<OrderItem> orderItems = orderItemDAO.getOrderItems(order.getOrderId());
 
-		System.out.println("DEBUG: Loading order items for order " + order.getOrderId() + ", found " + orderItems.size()
-				+ " items");
-
 		// Load product details for each order item
 		for (OrderItem item : orderItems) {
-			System.out.println(
-					"DEBUG: Loading product for item " + item.getOrderItemId() + ", productId=" + item.getProductId());
 			Product product = productDAO.getProductById(item.getProductId());
 			item.setProduct(product);
-			System.out.println("DEBUG: Product loaded: " + (product != null ? product.getName() : "null"));
 		}
 
 		order.setOrderItems(orderItems);
@@ -270,7 +262,6 @@ public class OrderDAO {
 			oc.setCombo(combo);
 		}
 		order.setOrderCombos(orderCombos);
-		System.out.println("DEBUG: Order items set, total items: " + order.getOrderItems().size());
 	}
 
 	// Lấy tổng số đơn hàng

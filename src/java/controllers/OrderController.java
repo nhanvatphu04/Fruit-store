@@ -70,7 +70,6 @@ public class OrderController extends HttpServlet {
             
             try {
                 String pathInfo = request.getPathInfo();
-                System.out.println("Customer order details request - PathInfo: " + pathInfo);
                 
                 int orderId;
                 if (pathInfo != null && !pathInfo.isEmpty() && !pathInfo.equals("/")) {
@@ -78,15 +77,12 @@ public class OrderController extends HttpServlet {
                 } else {
                     orderId = Integer.parseInt(path.substring(path.lastIndexOf('/') + 1));
                 }
-                
-                System.out.println("Customer requesting order ID: " + orderId);
-                
+                                
                 Order order = orderDAO.getOrderById(orderId);
                 
                 if (order != null) {
                     // Verify that this order belongs to the logged-in user
                     if (order.getUserId() != user.getUserId()) {
-                        System.out.println("Access denied: Order " + orderId + " does not belong to user " + user.getUserId());
                         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
                         Map<String, String> error = new HashMap<>();
                         error.put("message", "Bạn không có quyền xem đơn hàng này");
@@ -96,20 +92,15 @@ public class OrderController extends HttpServlet {
                     
                     // Get order items
                     List<OrderItem> items = order.getOrderItems();
-                    System.out.println("DEBUG: Order items from order object: " + (items != null ? items.size() : "null"));
                     if (items == null) {
                         items = new ArrayList<>();
                     }
 
-                    System.out.println("DEBUG: Processing " + items.size() + " items for order " + orderId);
-
                     // Load product details for each item
                     for (OrderItem item : items) {
                         try {
-                            System.out.println("DEBUG: Loading product for item " + item.getOrderItemId() + ", productId=" + item.getProductId());
                             Product product = productDAO.getProductById(item.getProductId());
                             item.setProduct(product);
-                            System.out.println("DEBUG: Product loaded: " + (product != null ? product.getName() : "null"));
                         } catch (Exception e) {
                             System.err.println("Error loading product " + item.getProductId() + ": " + e.getMessage());
                         }
@@ -137,9 +128,7 @@ public class OrderController extends HttpServlet {
                     
                     // Order items
                     List<Map<String, Object>> itemsList = new ArrayList<>();
-                    System.out.println("DEBUG: Building items list, total items: " + items.size());
                     for (OrderItem item : items) {
-                        System.out.println("DEBUG: Building item map for item " + item.getOrderItemId());
                         Map<String, Object> itemMap = new HashMap<>();
                         itemMap.put("orderItemId", item.getOrderItemId());
                         itemMap.put("orderId", item.getOrderId());
@@ -153,16 +142,13 @@ public class OrderController extends HttpServlet {
                             productMap.put("name", item.getProduct().getName() != null ? item.getProduct().getName() : "Unknown Product");
                             productMap.put("imageUrl", item.getProduct().getImageUrl() != null ? item.getProduct().getImageUrl() : "");
                             itemMap.put("product", productMap);
-                            System.out.println("DEBUG: Added product: " + item.getProduct().getName());
                         } else {
                             Map<String, Object> productMap = new HashMap<>();
                             productMap.put("name", "Unknown Product");
                             itemMap.put("product", productMap);
-                            System.out.println("DEBUG: Product is null, using Unknown Product");
                         }
                         itemsList.add(itemMap);
                     }
-                    System.out.println("DEBUG: Final items list size: " + itemsList.size());
                     orderDetails.put("items", itemsList);
 
                     // Order combos
@@ -194,12 +180,9 @@ public class OrderController extends HttpServlet {
                     orderDetails.put("combos", combosList);
                     
                     String jsonResponse = gson.toJson(orderDetails);
-                    System.out.println("Customer order details response length: " + jsonResponse.length());
-                    System.out.println("DEBUG: JSON Response: " + jsonResponse);
                     response.getWriter().write(jsonResponse);
                     response.getWriter().flush();
                 } else {
-                    System.out.println("Order not found: " + orderId);
                     response.setStatus(HttpServletResponse.SC_NOT_FOUND);
                     Map<String, String> error = new HashMap<>();
                     error.put("message", "Không tìm thấy đơn hàng");
@@ -251,7 +234,6 @@ public class OrderController extends HttpServlet {
             
             try {
                 int orderId = Integer.parseInt(request.getParameter("orderId"));
-                System.out.println("User " + user.getUserId() + " requesting to cancel order " + orderId);
                 
                 // Get the order
                 Order order = orderDAO.getOrderById(orderId);
@@ -275,10 +257,6 @@ public class OrderController extends HttpServlet {
                     boolean cancelled = orderDAO.updateOrderStatus(orderId, "cancelled");
                     result.put("success", cancelled);
                     result.put("message", cancelled ? "Đơn hàng đã được hủy thành công" : "Không thể hủy đơn hàng");
-                    
-                    if (cancelled) {
-                        System.out.println("Order " + orderId + " cancelled successfully by user " + user.getUserId());
-                    }
                 }
             } catch (NumberFormatException e) {
                 result.put("success", false);

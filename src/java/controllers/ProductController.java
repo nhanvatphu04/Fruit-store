@@ -86,21 +86,17 @@ public class ProductController extends HttpServlet {
             products = productService.searchProducts(searchQuery);
         } else if (filter != null && !filter.isEmpty()) {
             // Xử lý các bộ lọc đặc biệt
-            System.out.println("Filter parameter: " + filter);
             switch (filter) {
                 case "best-selling":
                     products = productService.getBestSellerProductsByFlag(1000); // Use a large but reasonable limit
                     request.setAttribute("filterName", "Sản phẩm bán chạy");
-                    System.out.println("Found " + products.size() + " best-selling products");
                     break;
                 case "new":
                     products = productService.getNewProductsByFlag(1000); // Use a large but reasonable limit
                     request.setAttribute("filterName", "Sản phẩm mới");
-                    System.out.println("Found " + products.size() + " new products");
                     break;
                 default:
                     products = productService.getAllProducts();
-                    System.out.println("Unknown filter: " + filter + ", using all products");
                     break;
             }
         } else {
