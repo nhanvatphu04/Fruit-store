@@ -297,6 +297,16 @@ public class AdminOrderController extends HttpServlet {
                     throw new IllegalArgumentException("Order not found");
                 }
                 
+                // Check if transition is valid (only pending -> completed or pending -> cancelled)
+                String currentStatus = order.getStatus();
+                if (!"pending".equals(currentStatus)) {
+                    throw new IllegalArgumentException("Can only change status from 'pending'. Current status is '" + currentStatus + "'");
+                }
+                
+                if (!"completed".equals(status) && !"cancelled".equals(status)) {
+                    throw new IllegalArgumentException("Can only change to 'completed' or 'cancelled'");
+                }
+                
                 boolean updated = orderDAO.updateOrderStatus(orderId, status);
                 result.put("success", updated);
                 result.put("message", updated ? "Status updated successfully" : "Failed to update status");

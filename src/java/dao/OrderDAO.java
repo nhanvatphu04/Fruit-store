@@ -81,18 +81,77 @@ public class OrderDAO {
 	}
 
 	// Cập nhật trạng thái đơn hàng
-	public boolean updateOrderStatus(int orderId, String status) {
+	public boolean updateOrderStatus(int orderId, String newStatus) {
+		// Validate status transitions: only pending -> completed or pending -> cancelled
+		Order currentOrder = getOrderById(orderId);
+		if (currentOrder == null) {
+			return false;
+		}
+
+		String currentStatus = currentOrder.getStatus();
+		
+		// Only allow transitions from pending
+		if (!"pending".equals(currentStatus)) {
+			System.out.println("ERROR: Cannot change status from " + currentStatus + " to " + newStatus);
+			return false;
+		}
+		
+		// Only allow transitions to completed or cancelled
+		if (!"completed".equals(newStatus) && !"cancelled".equals(newStatus)) {
+			System.out.println("ERROR: Invalid status transition to " + newStatus);
+			return false;
+		}
+
 		String sql = "UPDATE orders SET status = ? WHERE order_id = ?";
 		try (Connection conn = DbConnect.getInstance().getConnection();
 				PreparedStatement ps = conn.prepareStatement(sql)) {
-			ps.setString(1, status);
+			ps.setString(1, newStatus);
 			ps.setInt(2, orderId);
 			int rows = ps.executeUpdate();
+			
+			// If status changed to completed, update product stock and total sold
+			if (rows > 0 && "completed".equals(newStatus)) {
+				updateProductStatsOnOrderCompletion(orderId);
+			}
+			
 			return rows > 0;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return false;
+	}
+
+	// Update product stock and total sold when order is completed
+	private void updateProductStatsOnOrderCompletion(int orderId) {
+		Order order = getOrderById(orderId);
+		if (order == null) {
+			return;
+		}
+
+		try (Connection conn = DbConnect.getInstance().getConnection()) {
+			// Update stock and stats for each product in the order
+			for (OrderItem item : order.getOrderItems()) {
+				// Decrease stock quantity
+				String updateStockSql = "UPDATE products SET stock_quantity = stock_quantity - ? WHERE product_id = ?";
+				try (PreparedStatement ps = conn.prepareStatement(updateStockSql)) {
+					ps.setInt(1, item.getQuantity());
+					ps.setInt(2, item.getProductId());
+					ps.executeUpdate();
+				}
+
+				// Update or insert product stats
+				String updateStatsSql = "INSERT INTO product_stats (product_id, total_sold) VALUES (?, ?) " +
+						"ON DUPLICATE KEY UPDATE total_sold = total_sold + ?";
+				try (PreparedStatement ps = conn.prepareStatement(updateStatsSql)) {
+					ps.setInt(1, item.getProductId());
+					ps.setInt(2, item.getQuantity());
+					ps.setInt(3, item.getQuantity());
+					ps.executeUpdate();
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	// Lấy tất cả đơn hàng

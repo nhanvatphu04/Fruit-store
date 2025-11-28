@@ -205,11 +205,8 @@ public class CheckoutController extends HttpServlet {
                         throw new Exception("Không thể thêm sản phẩm vào đơn hàng");
                     }
 
-                    // Giảm số lượng tồn kho
-                    product.setStockQuantity(product.getStockQuantity() - item.getQuantity());
-                    if (!productDAO.updateProduct(product)) {
-                        throw new Exception("Không thể cập nhật tồn kho");
-                    }
+                    // Note: Stock reduction happens when order status is changed to 'completed', not here
+                    // This allows for order cancellation without affecting inventory
 
                     // Xóa sản phẩm khỏi giỏ hàng
                     cartDAO.removeCartItem(item.getCartId());
