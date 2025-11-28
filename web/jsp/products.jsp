@@ -128,8 +128,29 @@
                     <div class="product-filters">
                         <h4 class="mb-3">Lọc sản phẩm</h4>
                         
-                        <!-- Lọc giá -->
+                        <!-- Quick Filters -->
                         <div class="filter-group">
+                            <div class="filter-label">Bộ lọc nhanh:</div>
+                            <div class="d-grid gap-2">
+                                <a href="${pageContext.request.contextPath}/products?filter=best-selling" 
+                                   class="btn btn-outline-success ${param.filter eq 'best-selling' ? 'active' : ''}">
+                                    <i class="fas fa-fire"></i> Bán chạy
+                                </a>
+                                <a href="${pageContext.request.contextPath}/products?filter=new" 
+                                   class="btn btn-outline-success ${param.filter eq 'new' ? 'active' : ''}">
+                                    <i class="fas fa-sparkles"></i> Mới nhất
+                                </a>
+                                <c:if test="${not empty param.filter}">
+                                    <a href="${pageContext.request.contextPath}/products" 
+                                       class="btn btn-outline-secondary btn-sm">
+                                        <i class="fas fa-times"></i> Xóa bộ lọc
+                                    </a>
+                                </c:if>
+                            </div>
+                        </div>
+                        
+                        <!-- Lọc giá -->
+                        <div class="filter-group"></div>
                             <div class="filter-label">Khoảng giá:</div>
                             <div class="price-range mb-3">
                                 <input type="text" id="priceRange" readonly style="border:0; font-weight:bold;">
@@ -166,6 +187,12 @@
                     <div class="product-grid-header d-flex justify-content-between align-items-center">
                         <h2 class="mb-0">
                             <c:choose>
+                                <c:when test="${param.filter eq 'best-selling'}">
+                                    <i class="fas fa-fire text-danger"></i> Sản phẩm bán chạy
+                                </c:when>
+                                <c:when test="${param.filter eq 'new'}">
+                                    <i class="fas fa-sparkles text-success"></i> Sản phẩm mới
+                                </c:when>
                                 <c:when test="${not empty param.category}">
                                     <i class="fas fa-apple-alt text-primary"></i> ${categoryName}
                                 </c:when>
@@ -182,11 +209,6 @@
                         </h2>
                         <div class="d-flex align-items-center gap-3">
                             <small class="text-muted">${products.size()} sản phẩm</small>
-                            <c:if test="${not empty param.filter}">
-                                <a href="${pageContext.request.contextPath}/products" class="btn btn-outline-secondary btn-sm">
-                                    <i class="fas fa-times"></i> Xóa bộ lọc
-                                </a>
-                            </c:if>
                         </div>
                     </div>
 
