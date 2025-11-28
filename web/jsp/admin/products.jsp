@@ -157,20 +157,11 @@
                                 <label class="form-label">Image</label>
                                 <input type="file" class="form-control" name="image" accept="image/*" required>
                             </div>
-                            <div class="mb-3">
-                                <div class="form-check">
-                                    <input type="hidden" name="isNew" value="false">
-                                    <input type="checkbox" class="form-check-input" name="isNew" id="isNew" value="true">
-                                    <label class="form-check-label" for="isNew">Mark as New Product</label>
-                                </div>
-                            </div>
-                            <div class="mb-3">
-                                <div class="form-check">
-                                    <input type="hidden" name="isBestSeller" value="false">
-                                    <input type="checkbox" class="form-check-input" name="isBestSeller" id="isBestSeller" value="true">
-                                    <label class="form-check-label" for="isBestSeller">Mark as Best Seller</label>
-                                </div>
-                            </div>
+                            <small class="text-muted d-block mb-3">
+                                <i class="fas fa-info-circle"></i> 
+                                "New Product" badge is automatically set for products created within 7 days.<br>
+                                "Best Seller" badge is automatically set for products with total sales above 100 units.
+                            </small>
                         </form>
                     </div>
                     <div class="modal-footer">
@@ -225,20 +216,11 @@
                                 <input type="file" class="form-control" name="image" accept="image/*">
                                 <small class="text-muted">Leave empty to keep current image</small>
                             </div>
-                            <div class="mb-3">
-                                <div class="form-check">
-                                    <input type="hidden" name="isNew" value="false">
-                                    <input type="checkbox" class="form-check-input" name="isNew" id="editIsNew" value="true">
-                                    <label class="form-check-label" for="editIsNew">Mark as New Product</label>
-                                </div>
-                            </div>
-                            <div class="mb-3">
-                                <div class="form-check">
-                                    <input type="hidden" name="isBestSeller" value="false">
-                                    <input type="checkbox" class="form-check-input" name="isBestSeller" id="editIsBestSeller" value="true">
-                                    <label class="form-check-label" for="editIsBestSeller">Mark as Best Seller</label>
-                                </div>
-                            </div>
+                            <small class="text-muted d-block mb-3">
+                                <i class="fas fa-info-circle"></i> 
+                                "New Product" badge is automatically set for products created within 7 days.<br>
+                                "Best Seller" badge is automatically set for products with total sales above 100 units.
+                            </small>
                         </form>
                     </div>
                     <div class="modal-footer">

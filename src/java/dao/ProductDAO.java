@@ -145,7 +145,7 @@ public class ProductDAO {
 
 	// Thêm sản phẩm
 	public boolean addProduct(Product product) {
-		String sql = "INSERT INTO products (name, description, price, stock_quantity, image_url, category_id, discount_percent, is_new, is_best_seller) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+		String sql = "INSERT INTO products (name, description, price, stock_quantity, image_url, category_id, discount_percent) VALUES (?, ?, ?, ?, ?, ?, ?)";
 		try (Connection conn = DbConnect.getInstance().getConnection();
 			 PreparedStatement ps = conn.prepareStatement(sql)) {
 			ps.setString(1, product.getName());
@@ -155,8 +155,6 @@ public class ProductDAO {
 			ps.setString(5, product.getImageUrl());
 			ps.setInt(6, product.getCategoryId());
 			ps.setInt(7, product.getDiscountPercent());
-			ps.setBoolean(8, product.isNew());
-			ps.setBoolean(9, product.isBestSeller());
 			int rows = ps.executeUpdate();
 			return rows > 0;
 		} catch (Exception e) {
@@ -167,7 +165,7 @@ public class ProductDAO {
 
 	// Cập nhật sản phẩm
 	public boolean updateProduct(Product product) {
-		String sql = "UPDATE products SET name=?, description=?, price=?, stock_quantity=?, image_url=?, category_id=?, discount_percent=?, is_new=?, is_best_seller=? WHERE product_id=?";
+		String sql = "UPDATE products SET name=?, description=?, price=?, stock_quantity=?, image_url=?, category_id=?, discount_percent=? WHERE product_id=?";
 		try (Connection conn = DbConnect.getInstance().getConnection();
 			 PreparedStatement ps = conn.prepareStatement(sql)) {
 			ps.setString(1, product.getName());
@@ -177,9 +175,7 @@ public class ProductDAO {
 			ps.setString(5, product.getImageUrl());
 			ps.setInt(6, product.getCategoryId());
 			ps.setInt(7, product.getDiscountPercent());
-			ps.setBoolean(8, product.isNew());
-			ps.setBoolean(9, product.isBestSeller());
-			ps.setInt(10, product.getProductId());
+			ps.setInt(8, product.getProductId());
 			int rows = ps.executeUpdate();
 			return rows > 0;
 		} catch (Exception e) {
@@ -213,16 +209,29 @@ public class ProductDAO {
 		p.setImageUrl(rs.getString("image_url"));
 		p.setCategoryId(rs.getInt("category_id"));
 		p.setDiscountPercent(rs.getInt("discount_percent"));
-		p.setNew(rs.getBoolean("is_new"));
-		p.setBestSeller(rs.getBoolean("is_best_seller"));
 		p.setCreatedAt(rs.getTimestamp("created_at"));
 		
 		// Đặt total_sold nếu có trong ResultSet
+		int totalSold = 0;
 		try {
-			p.setTotalSold(rs.getInt("total_sold"));
+			totalSold = rs.getInt("total_sold");
+			p.setTotalSold(totalSold);
 		} catch (SQLException e) {
 			p.setTotalSold(0);
 		}
+		
+		// Automatically set isNew: product created within 7 days
+		if (p.getCreatedAt() != null) {
+			long createdTime = p.getCreatedAt().getTime();
+			long currentTime = System.currentTimeMillis();
+			long sevenDaysInMs = 7 * 24 * 60 * 60 * 1000L;
+			p.setNew(currentTime - createdTime <= sevenDaysInMs);
+		} else {
+			p.setNew(false);
+		}
+		
+		// Automatically set isBestSeller: product with total_sold > 100
+		p.setBestSeller(totalSold > 100);
 		
 		return p;
 	}
