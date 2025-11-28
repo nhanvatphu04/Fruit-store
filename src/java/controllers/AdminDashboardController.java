@@ -40,6 +40,22 @@ public class AdminDashboardController extends HttpServlet {
             int totalUsers = dashboardService.getTotalUsers();
             int totalOrders = dashboardService.getTotalOrders();
             double totalRevenue = dashboardService.getTotalRevenue();
+            
+            // Lấy thống kê đơn hàng theo trạng thái
+            int completedOrders = dashboardService.getOrderCountByStatus("completed");
+            int pendingOrders = dashboardService.getOrderCountByStatus("pending");
+            int cancelledOrders = dashboardService.getOrderCountByStatus("cancelled");
+            
+            // Tính tỷ lệ hủy
+            double cancellationRate = totalOrders > 0 ? (cancelledOrders * 100.0 / totalOrders) : 0;
+            
+            // Lấy doanh thu hôm nay và tháng này
+            double revenueTodayAmount = dashboardService.getRevenueTodayAmount();
+            double revenueThisMonthAmount = dashboardService.getRevenueThisMonthAmount();
+            
+            // Lấy sản phẩm tồn kho thấp (< 10)
+            List<models.Product> lowStockProducts = dashboardService.getLowStockProducts(10);
+            int lowStockCount = lowStockProducts.size();
 
             // Lấy danh sách đơn hàng gần đây
             List<Order> recentOrders = dashboardService.getRecentOrders(10);
@@ -62,6 +78,12 @@ public class AdminDashboardController extends HttpServlet {
             request.setAttribute("totalUsers", totalUsers);
             request.setAttribute("totalOrders", totalOrders);
             request.setAttribute("totalRevenue", String.format("%.2f", totalRevenue));
+            request.setAttribute("completedOrdersCount", completedOrders);
+            request.setAttribute("cancellationRate", String.format("%.1f", cancellationRate));
+            request.setAttribute("revenueTodayAmount", String.format("%.2f", revenueTodayAmount));
+            request.setAttribute("revenueThisMonthAmount", String.format("%.2f", revenueThisMonthAmount));
+            request.setAttribute("lowStockCount", lowStockCount);
+            request.setAttribute("lowStockProducts", lowStockProducts);
             request.setAttribute("recentOrders", recentOrders);
             request.setAttribute("topProductsLabels", gson.toJson(labels));
             request.setAttribute("topProductsData", gson.toJson(data));
@@ -71,6 +93,13 @@ public class AdminDashboardController extends HttpServlet {
             request.setAttribute("revenueDayData", gson.toJson(revenueByDay.values()));
             request.setAttribute("revenueMonthLabels", gson.toJson(revenueByMonth.keySet()));
             request.setAttribute("revenueMonthData", gson.toJson(revenueByMonth.values()));
+
+            // Order status stats
+            Map<String, Integer> orderStats = new java.util.HashMap<>();
+            orderStats.put("completed", completedOrders);
+            orderStats.put("pending", pendingOrders);
+            orderStats.put("cancelled", cancelledOrders);
+            request.setAttribute("orderStats", gson.toJson(orderStats));
 
             // Top khách hàng
             request.setAttribute("topCustomers", topCustomers);

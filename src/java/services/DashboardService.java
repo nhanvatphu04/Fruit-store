@@ -79,4 +79,24 @@ public class DashboardService {
     public List<Order> getCustomerOrderHistory(int userId, int limit) throws SQLException {
         return orderDAO.getCustomerPurchaseHistory(userId, limit);
     }
+
+    // Lấy số lượng đơn hàng theo trạng thái
+    public int getOrderCountByStatus(String status) throws SQLException {
+        return orderDAO.countOrdersByStatus(status);
+    }
+
+    // Lấy doanh thu hôm nay
+    public double getRevenueTodayAmount() throws SQLException {
+        return orderDAO.getRevenueTodayAmount();
+    }
+
+    // Lấy doanh thu tháng này
+    public double getRevenueThisMonthAmount() throws SQLException {
+        return orderDAO.getRevenueThisMonthAmount();
+    }
+
+    // Lấy sản phẩm tồn kho thấp
+    public List<Product> getLowStockProducts(int limit) throws SQLException {
+        return productDAO.getLowStockProducts(limit);
+    }
 }

@@ -248,4 +248,26 @@ public class ProductDAO {
 		
 		return p;
 	}
+
+	// Lấy sản phẩm tồn kho thấp
+	public List<Product> getLowStockProducts(int limit) {
+		List<Product> list = new ArrayList<>();
+		String sql = "SELECT p.*, c.name as category_name, COALESCE(ps.total_sold, 0) as total_sold FROM products p " +
+				"LEFT JOIN categories c ON p.category_id = c.category_id " +
+				"LEFT JOIN product_stats ps ON p.product_id = ps.product_id " +
+				"WHERE p.stock_quantity < 10 " +
+				"ORDER BY p.stock_quantity ASC " +
+				"LIMIT ?";
+		try (Connection conn = DbConnect.getInstance().getConnection();
+			 PreparedStatement ps = conn.prepareStatement(sql)) {
+			ps.setInt(1, limit);
+			ResultSet rs = ps.executeQuery();
+			while (rs.next()) {
+				list.add(mapResultSetToProductWithCategory(rs));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return list;
+	}
 }

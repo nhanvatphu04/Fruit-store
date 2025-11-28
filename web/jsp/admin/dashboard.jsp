@@ -52,31 +52,71 @@
             
             <!-- Stats Cards -->
             <div class="row">
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <div class="stats-card">
                         <i class="fas fa-users text-primary"></i>
                         <h3 class="text-primary">${totalUsers}</h3>
                         <p class="text-muted mb-0">Total Users</p>
                     </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <div class="stats-card">
                         <i class="fas fa-shopping-cart text-success"></i>
                         <h3 class="text-success">${totalOrders}</h3>
                         <p class="text-muted mb-0">Total Orders</p>
                     </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <div class="stats-card">
+                        <i class="fas fa-money-bill-wave text-warning"></i>
                         <h3 class="text-warning"><fmt:formatNumber value="${totalRevenue}" type="number" groupingUsed="true" maxFractionDigits="0"/>đ</h3>
                         <p class="text-muted mb-0">Total Revenue</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stats-card">
+                        <i class="fas fa-exclamation-triangle text-danger"></i>
+                        <h3 class="text-danger">${cancellationRate}%</h3>
+                        <p class="text-muted mb-0">Cancellation Rate</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Secondary Stats Cards -->
+            <div class="row mt-3">
+                <div class="col-md-3">
+                    <div class="stats-card">
+                        <i class="fas fa-calendar-day text-info"></i>
+                        <h3 class="text-info"><fmt:formatNumber value="${revenueTodayAmount}" type="number" groupingUsed="true" maxFractionDigits="0"/>đ</h3>
+                        <p class="text-muted mb-0">Revenue Today</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stats-card">
+                        <i class="fas fa-calendar-alt text-info"></i>
+                        <h3 class="text-info"><fmt:formatNumber value="${revenueThisMonthAmount}" type="number" groupingUsed="true" maxFractionDigits="0"/>đ</h3>
+                        <p class="text-muted mb-0">Revenue This Month</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stats-card">
+                        <i class="fas fa-box text-warning"></i>
+                        <h3 class="text-warning">${lowStockCount}</h3>
+                        <p class="text-muted mb-0">Low Stock Products</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stats-card">
+                        <i class="fas fa-check-circle text-success"></i>
+                        <h3 class="text-success">${completedOrdersCount}</h3>
+                        <p class="text-muted mb-0">Completed Orders</p>
                     </div>
                 </div>
             </div>
 
             <!-- Revenue Growth Chart -->
             <div class="row mt-4">
-                <div class="col-md-12">
+                <div class="col-md-8">
                     <div class="card">
                         <div class="card-header d-flex justify-content-between align-items-center">
                             <h5 class="card-title mb-0">Revenue Growth</h5>
@@ -90,10 +130,53 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Order Status Chart -->
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Order Status Distribution</h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="orderStatusChart"></canvas>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <!-- Recent Orders Table -->
+            <!-- Low Stock Products Table -->
             <div class="row mt-4">
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Low Stock Products</h5>
+                        </div>
+                        <div class="card-body">
+                            <table id="lowStockTable" class="table table-striped table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>Stock</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <c:forEach items="${lowStockProducts}" var="product">
+                                        <tr>
+                                            <td>${product.name}</td>
+                                            <td>
+                                                <span class="badge bg-${product.stockQuantity <= 5 ? 'danger' : 'warning'}">
+                                                    ${product.stockQuantity}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    </c:forEach>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Orders Table -->
                 <div class="col-md-8">
                     <div class="card">
                         <div class="card-header">
@@ -242,6 +325,37 @@
                             '#ffc107', // yellow
                             '#dc3545', // red
                             '#6c757d'  // gray
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        },
+                        title: {
+                            display: false
+                        }
+                    },
+                    cutout: '70%'
+                }
+            });
+
+            // Order Status Chart
+            const orderStatusCtx = document.getElementById('orderStatusChart').getContext('2d');
+            const orderStats = JSON.parse('${orderStats}');
+            
+            new Chart(orderStatusCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Completed', 'Pending', 'Cancelled'],
+                    datasets: [{
+                        data: [orderStats.completed || 0, orderStats.pending || 0, orderStats.cancelled || 0],
+                        backgroundColor: [
+                            '#198754', // green - completed
+                            '#ffc107', // yellow - pending
+                            '#dc3545'  // red - cancelled
                         ]
                     }]
                 },

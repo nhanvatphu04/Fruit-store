@@ -368,6 +368,36 @@ public class OrderDAO {
 		return revenueMap;
 	}
 
+	// Lấy doanh thu hôm nay
+	public double getRevenueTodayAmount() throws SQLException {
+		String sql = "SELECT COALESCE(SUM(total_amount), 0) as total FROM orders WHERE status = 'completed' AND DATE(order_date) = CURDATE()";
+		try (Connection conn = DbConnect.getInstance().getConnection();
+				PreparedStatement ps = conn.prepareStatement(sql)) {
+			ResultSet rs = ps.executeQuery();
+			if (rs.next()) {
+				return rs.getDouble("total");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return 0.0;
+	}
+
+	// Lấy doanh thu tháng này
+	public double getRevenueThisMonthAmount() throws SQLException {
+		String sql = "SELECT COALESCE(SUM(total_amount), 0) as total FROM orders WHERE status = 'completed' AND YEAR(order_date) = YEAR(CURDATE()) AND MONTH(order_date) = MONTH(CURDATE())";
+		try (Connection conn = DbConnect.getInstance().getConnection();
+				PreparedStatement ps = conn.prepareStatement(sql)) {
+			ResultSet rs = ps.executeQuery();
+			if (rs.next()) {
+				return rs.getDouble("total");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return 0.0;
+	}
+
 	// Lấy top khách hàng theo tổng chi tiêu
 	public List<models.CustomerStats> getTopCustomers(int limit) throws SQLException {
 		List<models.CustomerStats> customerStatsList = new ArrayList<>();
