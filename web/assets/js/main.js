@@ -25,14 +25,14 @@ $(document).ready(function() {
         minLength: 2,
         select: function(event, ui) {
             // Chuyển đến trang sản phẩm khi chọn item
-            window.location.href = contextPath + '/product?id=' + ui.item.item.id;
+            window.location.href = contextPath + '/product?id=' + ui.item.item.productId;
             return false;
         }
     }).data('ui-autocomplete')._renderItem = function(ul, item) {
         // Tùy chỉnh giao diện của mỗi item trong danh sách gợi ý
         return $('<li>')
             .append('<div class="search-item">' +
-                '<img src="' + item.item.image + '" alt="' + item.label + '">' +
+                '<img src="' + item.item.imageUrl + '" alt="' + item.label + '">' +
                 '<div class="search-item-info">' +
                 '<div class="search-item-name">' + item.label + '</div>' +
                 '<div class="search-item-price">' + 
