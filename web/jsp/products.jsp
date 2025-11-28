@@ -180,73 +180,73 @@
                             </select>
                         </div>
                     </div>
-                </div>
-
-                <!-- Product Grid -->
-                <div class="col-lg-9">
-                    <div class="product-grid-header d-flex justify-content-between align-items-center">
-                        <h2 class="mb-0">
-                            <c:choose>
-                                <c:when test="${param.filter eq 'best-selling'}">
-                                    <i class="fas fa-fire text-danger"></i> Sản phẩm bán chạy
-                                </c:when>
-                                <c:when test="${param.filter eq 'new'}">
-                                    <i class="fas fa-sparkles text-success"></i> Sản phẩm mới
-                                </c:when>
-                                <c:when test="${not empty param.category}">
-                                    <i class="fas fa-apple-alt text-primary"></i> ${categoryName}
-                                </c:when>
-                                <c:when test="${not empty filterName}">
-                                    <i class="fas fa-filter text-primary"></i> ${filterName}
-                                </c:when>
-                                <c:otherwise>
-                                    <i class="fas fa-apple-alt text-primary"></i> Tất cả sản phẩm
-                                </c:otherwise>
-                            </c:choose>
-                            <c:if test="${not empty param.q}">
-                                - Kết quả cho "${param.q}"
-                            </c:if>
-                        </h2>
-                        <div class="d-flex align-items-center gap-3">
-                            <small class="text-muted">${products.size()} sản phẩm</small>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <c:forEach items="${products}" var="product">
-                            <div class="col-md-4 mb-4">
-                                <c:set var="product" value="${product}" scope="request" />
-                                <jsp:include page="common/product-card.jsp" />
+                    
+                    <!-- Product Grid -->
+                    <div class="col-lg-9">
+                        <div class="product-grid-header d-flex justify-content-between align-items-center">
+                            <h2 class="mb-0">
+                                <c:choose>
+                                    <c:when test="${param.filter eq 'best-selling'}">
+                                        <i class="fas fa-fire text-danger"></i> Sản phẩm bán chạy
+                                    </c:when>
+                                    <c:when test="${param.filter eq 'new'}">
+                                        <i class="fas fa-sparkles text-success"></i> Sản phẩm mới
+                                    </c:when>
+                                    <c:when test="${not empty param.category}">
+                                        <i class="fas fa-apple-alt text-primary"></i> ${categoryName}
+                                    </c:when>
+                                    <c:when test="${not empty filterName}">
+                                        <i class="fas fa-filter text-primary"></i> ${filterName}
+                                    </c:when>
+                                    <c:otherwise>
+                                        <i class="fas fa-apple-alt text-primary"></i> Tất cả sản phẩm
+                                    </c:otherwise>
+                                </c:choose>
+                                <c:if test="${not empty param.q}">
+                                    - Kết quả cho "${param.q}"
+                                </c:if>
+                            </h2>
+                            <div class="d-flex align-items-center gap-3">
+                                <small class="text-muted">${products.size()} sản phẩm</small>
                             </div>
-                        </c:forEach>
-                    </div>
+                        </div>
 
-                    <!-- Phân trang -->
-                    <c:if test="${totalPages > 1}">
-                        <nav aria-label="Product navigation" class="mt-4">
-                            <ul class="pagination justify-content-center">
-                                <li class="page-item ${currentPage == 1 ? 'disabled' : ''}">
-                                    <a class="page-link" href="?page=${currentPage - 1}${not empty param.category ? '&category='.concat(param.category) : ''}${not empty param.filter ? '&filter='.concat(param.filter) : ''}${not empty param.q ? '&q='.concat(param.q) : ''}${not empty param.sort ? '&sort='.concat(param.sort) : ''}${not empty param.min_price ? '&min_price='.concat(param.min_price) : ''}${not empty param.max_price ? '&max_price='.concat(param.max_price) : ''}">
-                                        <i class="fas fa-chevron-left"></i>
-                                    </a>
-                                </li>
-                                
-                                <c:forEach begin="1" end="${totalPages}" var="page">
-                                    <li class="page-item ${currentPage == page ? 'active' : ''}">
-                                        <a class="page-link" href="?page=${page}${not empty param.category ? '&category='.concat(param.category) : ''}${not empty param.filter ? '&filter='.concat(param.filter) : ''}${not empty param.q ? '&q='.concat(param.q) : ''}${not empty param.sort ? '&sort='.concat(param.sort) : ''}${not empty param.min_price ? '&min_price='.concat(param.min_price) : ''}${not empty param.max_price ? '&max_price='.concat(param.max_price) : ''}">
-                                            ${page}
+                        <div class="row">
+                            <c:forEach items="${products}" var="product">
+                                <div class="col-md-4 mb-4">
+                                    <c:set var="product" value="${product}" scope="request" />
+                                    <jsp:include page="common/product-card.jsp" />
+                                </div>
+                            </c:forEach>
+                        </div>
+
+                        <!-- Phân trang -->
+                        <c:if test="${totalPages > 1}">
+                            <nav aria-label="Product navigation" class="mt-4">
+                                <ul class="pagination justify-content-center">
+                                    <li class="page-item ${currentPage == 1 ? 'disabled' : ''}">
+                                        <a class="page-link" href="?page=${currentPage - 1}${not empty param.category ? '&category='.concat(param.category) : ''}${not empty param.filter ? '&filter='.concat(param.filter) : ''}${not empty param.q ? '&q='.concat(param.q) : ''}${not empty param.sort ? '&sort='.concat(param.sort) : ''}${not empty param.min_price ? '&min_price='.concat(param.min_price) : ''}${not empty param.max_price ? '&max_price='.concat(param.max_price) : ''}">
+                                            <i class="fas fa-chevron-left"></i>
                                         </a>
                                     </li>
-                                </c:forEach>
-                                
-                                <li class="page-item ${currentPage == totalPages ? 'disabled' : ''}">
-                                    <a class="page-link" href="?page=${currentPage + 1}${not empty param.category ? '&category='.concat(param.category) : ''}${not empty param.filter ? '&filter='.concat(param.filter) : ''}${not empty param.q ? '&q='.concat(param.q) : ''}${not empty param.sort ? '&sort='.concat(param.sort) : ''}${not empty param.min_price ? '&min_price='.concat(param.min_price) : ''}${not empty param.max_price ? '&max_price='.concat(param.max_price) : ''}">
-                                        <i class="fas fa-chevron-right"></i>
-                                    </a>
-                                </li>
-                            </ul>
-                        </nav>
-                    </c:if>
+                                    
+                                    <c:forEach begin="1" end="${totalPages}" var="page">
+                                        <li class="page-item ${currentPage == page ? 'active' : ''}">
+                                            <a class="page-link" href="?page=${page}${not empty param.category ? '&category='.concat(param.category) : ''}${not empty param.filter ? '&filter='.concat(param.filter) : ''}${not empty param.q ? '&q='.concat(param.q) : ''}${not empty param.sort ? '&sort='.concat(param.sort) : ''}${not empty param.min_price ? '&min_price='.concat(param.min_price) : ''}${not empty param.max_price ? '&max_price='.concat(param.max_price) : ''}">
+                                                ${page}
+                                            </a>
+                                        </li>
+                                    </c:forEach>
+                                    
+                                    <li class="page-item ${currentPage == totalPages ? 'disabled' : ''}">
+                                        <a class="page-link" href="?page=${currentPage + 1}${not empty param.category ? '&category='.concat(param.category) : ''}${not empty param.filter ? '&filter='.concat(param.filter) : ''}${not empty param.q ? '&q='.concat(param.q) : ''}${not empty param.sort ? '&sort='.concat(param.sort) : ''}${not empty param.min_price ? '&min_price='.concat(param.min_price) : ''}${not empty param.max_price ? '&max_price='.concat(param.max_price) : ''}">
+                                            <i class="fas fa-chevron-right"></i>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </c:if>
+                    </div>
                 </div>
             </div>
         </div>
