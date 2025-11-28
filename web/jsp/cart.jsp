@@ -317,6 +317,17 @@
                 }
             });
 
+            // Xác thực số lượng khi tải trang - đảm bảo không có số lượng nào vượt quá số lượng có sẵn
+            $('.increase-qty').each(function() {
+                let stock = parseInt($(this).data('stock'));
+                let currentQty = parseInt($(this).siblings('.quantity-display').text());
+                let cartId = $(this).data('cart-id');
+
+                if (currentQty > stock) {
+                    updateQuantity(cartId, stock);
+                }
+            });
+
             // Giảm số lượng sản phẩm
             $('.decrease-qty').click(function() {
                 let cartId = $(this).data('cart-id');
