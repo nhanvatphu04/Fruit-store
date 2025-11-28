@@ -241,21 +241,6 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- Import modal thêm vào giỏ hàng -->
     <%@ include file="common/add-to-cart-modal.jsp" %>
-    <!-- Custom JS -->
-    <script>
-        // Add to cart function for product cards
-        function addToCart(productId, name, price, stockQuantity, originalPrice = null, discountPercent = 0) {
-            if (stockQuantity <= 0) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Hết hàng!',
-                    text: 'Sản phẩm này hiện đã hết hàng'
-                });
-                return;
-            }
-            showAddToCartModal(productId, name, price, stockQuantity, originalPrice, discountPercent);
-        }
-    </script>
     <script>
         $(function() {
             const urlParams = new URLSearchParams(window.location.search);

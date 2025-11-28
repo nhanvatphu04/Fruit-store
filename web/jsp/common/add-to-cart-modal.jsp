@@ -1,6 +1,30 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <!-- Script xử lý thêm vào giỏ hàng -->
 <script>
+// Generic add to cart function that validates and calls the modal
+function addToCart(productId, productName, productPrice, stockQuantity, originalPrice = null, discountPercent = 0) {
+    // Validate productId
+    if (!productId || productId === 'null' || productId === '') {
+        Swal.fire({
+            icon: 'error',
+            title: 'Lỗi!',
+            text: 'ID sản phẩm không hợp lệ'
+        });
+        return;
+    }
+    
+    if (stockQuantity <= 0) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Hết hàng!',
+            text: 'Sản phẩm này hiện đã hết hàng'
+        });
+        return;
+    }
+    
+    showAddToCartModal(productId, productName, productPrice, stockQuantity, originalPrice, discountPercent);
+}
+
 function showAddToCartModal(productId, productName, productPrice, stockQuantity, originalPrice = null, discountPercent = 0) {
     // Tạo HTML động dựa trên thông tin sản phẩm
     let priceHtml = '';

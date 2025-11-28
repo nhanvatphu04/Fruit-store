@@ -260,30 +260,6 @@
     <script src="${pageContext.request.contextPath}/assets/js/main.js"></script>
     <script src="${pageContext.request.contextPath}/assets/js/home.js"></script>
     <script>
-        // Add to cart function for product cards
-        function addToCart(productId, name, price, stockQuantity, originalPrice = null, discountPercent = 0) {           
-            // Validate productId
-            if (!productId || productId === 'null' || productId === '') {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Lỗi!',
-                    text: 'ID sản phẩm không hợp lệ'
-                });
-                return;
-            }
-            
-            if (stockQuantity <= 0) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Hết hàng!',
-                    text: 'Sản phẩm này hiện đã hết hàng'
-                });
-                return;
-            }
-            showAddToCartModal(productId, name, price, stockQuantity, originalPrice, discountPercent);
-        }
-    </script>
-    <script>
         // Back to Top Button
         $(window).scroll(function() {
             if ($(this).scrollTop() > 300) {

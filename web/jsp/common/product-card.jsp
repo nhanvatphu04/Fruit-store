@@ -103,7 +103,7 @@
         <c:choose>
             <c:when test="${product.stockQuantity > 0}">
                 <button class="btn btn-success" 
-                        onclick="addToCart('${product.productId}', '${product.name}', '${product.onSale ? product.discountedPrice : product.price}', '${product.stockQuantity}', '${product.price}', '${product.discountPercent}')"
+                        onclick="addToCart('${product.productId}', '${product.name}', '<fmt:formatNumber value="${product.onSale ? product.discountedPrice : product.price}" type="currency" currencyCode="VND"/>', '${product.stockQuantity}', '<fmt:formatNumber value="${product.price}" type="currency" currencyCode="VND"/>', '${product.discountPercent}')"
                         data-product-id="${product.productId}">
                     <i class="fas fa-shopping-cart"></i> Thêm vào giỏ
                 </button>
