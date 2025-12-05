@@ -196,6 +196,20 @@
             $('.view-order-details').click(function() {
                 const orderId = $(this).data('order-id');
                 
+                // Clear previous modal data
+                $('#modalOrderId').text('');
+                $('#detailOrderId').text('');
+                $('#detailOrderDate').text('');
+                $('#detailOrderStatus').html('');
+                $('#detailCustomerName').text('');
+                $('#detailCustomerEmail').text('');
+                $('#detailCustomerPhone').text('');
+                $('#detailCustomerAddress').text('');
+                $('#detailOrderDiscount').text('');
+                $('#discountRow').hide();
+                $('#detailOrderItems').html('');
+                $('#detailOrderTotal').text('');
+                
                 // Fetch order details
                 $.ajax({
                     url: contextPath + '/orders/details/' + orderId,
@@ -291,7 +305,18 @@
                         }
 
                         $('#detailOrderItems').html(itemsHtml);
-                        $('#detailOrderTotal').text(total.toLocaleString('vi-VN') + '₫');
+                        
+                        // Display discount row if there's a discount
+                        let discountAmount = response.discountAmount ? parseFloat(response.discountAmount) : 0;
+                        if (!isNaN(discountAmount) && discountAmount > 0) {
+                            $('#detailOrderDiscount').text('- ₫' + discountAmount.toLocaleString('vi-VN'));
+                            $('#discountRow').show();
+                            total -= discountAmount;
+                        } else {
+                            $('#discountRow').hide();
+                        }
+                        
+                        $('#detailOrderTotal').text('₫' + total.toLocaleString('vi-VN'));
                         
                         // Show modal
                         $('#orderDetailsModal').modal('show');

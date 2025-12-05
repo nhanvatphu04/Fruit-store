@@ -40,6 +40,8 @@ $(document).ready(function() {
         $('#detailDiscountAmount').text('');
         $('#discountSection').hide();
         $('#detailOrderItems').html('');
+        $('#detailOrderDiscount').text('');
+        $('#discountRow').hide();
         $('#detailOrderTotal').text('');
 
         // Fetch order details
@@ -49,6 +51,8 @@ $(document).ready(function() {
             dataType: 'json',
             success: function(response) {
                 console.log('Order details response:', response);
+                console.log('Discount Amount:', response.discountAmount);
+                console.log('Discount Code:', response.discountCode);
 
                 // Check if response data is valid
                 if (!response || typeof response !== 'object') {
@@ -151,6 +155,17 @@ $(document).ready(function() {
                 }
 
                 $('#detailOrderItems').html(itemsHtml);
+                
+                // Display discount row if there's a discount
+                let discountAmount = response.discountAmount ? parseFloat(response.discountAmount) : 0;
+                if (!isNaN(discountAmount) && discountAmount > 0) {
+                    $('#detailOrderDiscount').text('- ₫' + discountAmount.toLocaleString('vi-VN'));
+                    $('#discountRow').show();
+                    total -= discountAmount;
+                } else {
+                    $('#discountRow').hide();
+                }
+                
                 $('#detailOrderTotal').text('₫' + total.toLocaleString('vi-VN'));
 
                 // Show modal

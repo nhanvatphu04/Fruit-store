@@ -48,6 +48,10 @@
                             <!-- Filled by JS -->
                         </tbody>
                         <tfoot>
+                            <tr id="discountRow" style="display: none;">
+                                <td colspan="3" class="text-end"><strong>Giảm giá:</strong></td>
+                                <td><strong id="detailOrderDiscount" class="text-danger"></strong></td>
+                            </tr>
                             <tr class="table-light">
                                 <td colspan="3" class="text-end"><strong>Tổng cộng:</strong></td>
                                 <td><strong id="detailOrderTotal" class="text-success"></strong></td>

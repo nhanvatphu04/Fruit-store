@@ -119,6 +119,8 @@ public class AdminOrderController extends HttpServlet {
                     orderDetails.put("totalAmount", order.getTotalAmount() != null ? order.getTotalAmount().toString() : "0");
                     orderDetails.put("status", order.getStatus() != null ? order.getStatus() : "unknown");
                     orderDetails.put("shippingAddress", order.getShippingAddress());
+                    orderDetails.put("discountCode", order.getDiscountCode() != null ? order.getDiscountCode() : "");
+                    orderDetails.put("discountAmount", order.getDiscountAmount() != null ? order.getDiscountAmount().toString() : "0");
                     
                     // Tạo customer map để đảm bảo serialization đúng
                     Map<String, Object> customerMap = new HashMap<>();
