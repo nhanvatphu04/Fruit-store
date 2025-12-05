@@ -7,8 +7,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import models.Product;
 import models.Combo;
+import models.Category;
 import services.ProductService;
 import services.ComboService;
+import services.CategoryService;
 import java.io.IOException;
 import java.util.List;
 
@@ -16,10 +18,12 @@ import java.util.List;
 public class HomeController extends HttpServlet {
     private final ProductService productService;
     private final ComboService comboService;
+    private final CategoryService categoryService;
 
     public HomeController() {
         productService = new ProductService();
         comboService = new ComboService();
+        categoryService = new CategoryService();
     }
 
     @Override
@@ -37,6 +41,10 @@ public class HomeController extends HttpServlet {
             // Lấy combo/flash sale đang diễn ra
             List<Combo> activeCombo = comboService.getActiveCombo();
             request.setAttribute("activeCombo", activeCombo);
+
+            // Lấy tất cả danh mục từ database
+            List<Category> categories = categoryService.getAllCategories();
+            request.setAttribute("categories", categories);
 
             // Forward đến trang home.jsp
             request.getRequestDispatcher("/jsp/home.jsp").forward(request, response);

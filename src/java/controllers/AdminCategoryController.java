@@ -6,12 +6,9 @@ import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import models.Category;
-import models.Product;
 import models.User;
 import services.CategoryService;
-import services.ProductService;
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -21,24 +18,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-@WebServlet(name = "AdminProductController", urlPatterns = {
-    "/admin/products",
-    "/admin/products/*"
+@WebServlet(name = "AdminCategoryController", urlPatterns = {
+    "/admin/categories",
+    "/admin/categories/*"
 })
 @MultipartConfig(
     fileSizeThreshold = 1024 * 1024, // 1 MB
     maxFileSize = 1024 * 1024 * 10,  // 10 MB
     maxRequestSize = 1024 * 1024 * 50 // 50 MB
 )
-public class AdminProductController extends HttpServlet {
-    private ProductService productService;
+public class AdminCategoryController extends HttpServlet {
     private CategoryService categoryService;
-    private static final String UPLOAD_DIR = "assets/images/products";
+    private static final String UPLOAD_DIR = "assets/images/categories";
     private Gson gson = new Gson();
 
     @Override
     public void init() throws ServletException {
-        productService = new ProductService();
         categoryService = new CategoryService();
     }
 
@@ -55,33 +50,30 @@ public class AdminProductController extends HttpServlet {
         String pathInfo = request.getPathInfo();
         
         if (pathInfo == null || pathInfo.equals("/")) {
-            // Hiển thị trang quản lý sản phẩm
-            List<Product> products = productService.getAllProducts();
+            // Hiển thị trang quản lý danh mục
             List<Category> categories = categoryService.getAllCategories();
-            
-            request.setAttribute("products", products);
             request.setAttribute("categories", categories);
-            request.getRequestDispatcher("/jsp/admin/products.jsp").forward(request, response);
+            request.getRequestDispatcher("/jsp/admin/categories.jsp").forward(request, response);
             
         } else if (pathInfo.startsWith("/get/")) {
-            // API lấy thông tin sản phẩm
+            // API lấy thông tin danh mục
             response.setContentType("application/json");
             String idStr = pathInfo.substring(5);
             try {
-                int productId = Integer.parseInt(idStr);
-                Product product = productService.getProductById(productId);
-                if (product != null) {
-                    response.getWriter().write(gson.toJson(product));
+                int categoryId = Integer.parseInt(idStr);
+                Category category = categoryService.getCategoryById(categoryId);
+                if (category != null) {
+                    response.getWriter().write(gson.toJson(category));
                 } else {
                     response.setStatus(HttpServletResponse.SC_NOT_FOUND);
                     Map<String, Object> error = new HashMap<>();
-                    error.put("error", "Product not found");
+                    error.put("error", "Category not found");
                     response.getWriter().write(gson.toJson(error));
                 }
             } catch (NumberFormatException e) {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 Map<String, Object> error = new HashMap<>();
-                error.put("error", "Invalid product ID");
+                error.put("error", "Invalid category ID");
                 response.getWriter().write(gson.toJson(error));
             }
         }
@@ -108,14 +100,14 @@ public class AdminProductController extends HttpServlet {
         String pathInfo = request.getPathInfo();
         
         if (pathInfo.equals("/add")) {
-            // Thêm sản phẩm mới
+            // Thêm danh mục mới
             try {
-                Product product = getProductFromRequest(request);
-                if (productService.addProduct(product)) {
+                Category category = getCategoryFromRequest(request);
+                if (categoryService.addCategory(category)) {
                     jsonResponse.put("success", true);
                 } else {
                     jsonResponse.put("success", false);
-                    jsonResponse.put("message", "Failed to add product");
+                    jsonResponse.put("message", "Failed to add category");
                 }
             } catch (Exception e) {
                 jsonResponse.put("success", false);
@@ -123,28 +115,35 @@ public class AdminProductController extends HttpServlet {
             }
             
         } else if (pathInfo.startsWith("/update/")) {
-            // Cập nhật sản phẩm
+            // Cập nhật danh mục
             try {
-                int productId = Integer.parseInt(pathInfo.substring(8));
+                int categoryId = Integer.parseInt(pathInfo.substring(8));
                 
-                // Get existing product to preserve image if not updated
-                Product existingProduct = productService.getProductById(productId);
+                // Get existing category to preserve image if not updated
+                Category existingCategory = categoryService.getCategoryById(categoryId);
                 
-                Product product = getProductFromRequest(request);
-                product.setProductId(productId);
+                Category category = getCategoryFromRequest(request);
+                category.setCategoryId(categoryId);
                 
                 // If no new image provided, keep the existing image URL
-                if (product.getImageUrl() == null || product.getImageUrl().isEmpty()) {
-                    if (existingProduct != null) {
-                        product.setImageUrl(existingProduct.getImageUrl());
+                if (category.getImageUrl() == null || category.getImageUrl().isEmpty()) {
+                    if (existingCategory != null) {
+                        category.setImageUrl(existingCategory.getImageUrl());
                     }
                 }
                 
-                if (productService.updateProduct(product)) {
+                // If no slug provided, keep the existing slug
+                if (category.getSlug() == null || category.getSlug().isEmpty()) {
+                    if (existingCategory != null) {
+                        category.setSlug(existingCategory.getSlug());
+                    }
+                }
+                
+                if (categoryService.updateCategory(category)) {
                     jsonResponse.put("success", true);
                 } else {
                     jsonResponse.put("success", false);
-                    jsonResponse.put("message", "Failed to update product");
+                    jsonResponse.put("message", "Failed to update category");
                 }
             } catch (Exception e) {
                 jsonResponse.put("success", false);
@@ -152,14 +151,14 @@ public class AdminProductController extends HttpServlet {
             }
             
         } else if (pathInfo.startsWith("/delete/")) {
-            // Xoá sản phẩm
+            // Xoá danh mục
             try {
-                int productId = Integer.parseInt(pathInfo.substring(8));
-                if (productService.deleteProduct(productId)) {
+                int categoryId = Integer.parseInt(pathInfo.substring(8));
+                if (categoryService.deleteCategory(categoryId)) {
                     jsonResponse.put("success", true);
                 } else {
                     jsonResponse.put("success", false);
-                    jsonResponse.put("message", "Failed to delete product");
+                    jsonResponse.put("message", "Failed to delete category");
                 }
             } catch (Exception e) {
                 jsonResponse.put("success", false);
@@ -170,17 +169,12 @@ public class AdminProductController extends HttpServlet {
         response.getWriter().write(gson.toJson(jsonResponse));
     }
     
-    private Product getProductFromRequest(HttpServletRequest request) throws Exception {
-        Product product = new Product();
+    private Category getCategoryFromRequest(HttpServletRequest request) throws Exception {
+        Category category = new Category();
         
-        product.setName(request.getParameter("name"));
-        product.setDescription(request.getParameter("description"));
-        product.setPrice(new BigDecimal(request.getParameter("price")));
-        product.setStockQuantity(Integer.parseInt(request.getParameter("stockQuantity")));
-        product.setCategoryId(Integer.parseInt(request.getParameter("categoryId")));
-        product.setDiscountPercent(Integer.parseInt(request.getParameter("discountPercent")));
-        product.setNew(Boolean.parseBoolean(request.getParameter("isNew")));
-        product.setBestSeller(Boolean.parseBoolean(request.getParameter("isBestSeller")));
+        category.setName(request.getParameter("name"));
+        category.setDescription(request.getParameter("description"));
+        category.setIcon(request.getParameter("icon"));
         
         // Xử lý upload ảnh
         Part filePart = request.getPart("image");
@@ -206,7 +200,7 @@ public class AdminProductController extends HttpServlet {
             
             // Lưu đường dẫn tương đối, không bao gồm đường dẫn context path
             String imageUrl = "/" + UPLOAD_DIR + "/" + fileName;
-            product.setImageUrl(imageUrl);
+            category.setImageUrl(imageUrl);
             
             // Also save to build directory for immediate access
             String webRoot = request.getServletContext().getRealPath("/");
@@ -222,7 +216,14 @@ public class AdminProductController extends HttpServlet {
             Files.copy(sourcePath, targetPath, StandardCopyOption.REPLACE_EXISTING);
         }
         
-        return product;
+        // Generate slug from name
+        String slug = request.getParameter("slug");
+        if (slug == null || slug.isEmpty()) {
+            slug = categoryService.generateSlug(category.getName());
+        }
+        category.setSlug(slug);
+        
+        return category;
     }
     
     private String getFileExtension(Part part) {

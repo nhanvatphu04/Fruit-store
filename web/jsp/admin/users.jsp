@@ -36,6 +36,9 @@
                 <a href="${pageContext.request.contextPath}/admin/users" class="sidebar-link active">
                     <i class="fas fa-users me-2"></i> Users
                 </a>
+                <a href="${pageContext.request.contextPath}/admin/categories" class="sidebar-link">
+                    <i class="fas fa-list me-2"></i> Categories
+                </a>
                 <a href="${pageContext.request.contextPath}/admin/products" class="sidebar-link">
                     <i class="fas fa-apple-alt me-2"></i> Products
                 </a>

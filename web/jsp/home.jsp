@@ -44,6 +44,29 @@
         .flipdown.flipdown__theme-dark .rotor-leaf-front {
             color: #ffffff;
         }
+
+        .category-badge,
+        .category-badge-item,
+        .category-name,
+        .category-icon {
+            color: #198754 !important;
+        }
+
+        .category-badge-item {
+            border: 1px solid #e5e7eb;
+            border-radius: 14px;
+            padding: 18px 10px;
+            background: #ffffff;
+            text-align: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        }
+
+        .category-badge-item:hover {
+            border-color: #28a745;
+            box-shadow: 0 4px 14px rgba(40,167,69,0.25);
+            transform: translateY(-5px);
+        }
     </style>
     
     <!-- Thêm contextPath cho JavaScript -->
@@ -57,17 +80,79 @@
 
     <!-- Main Content -->
     <main>
-        <!-- Hero Banner -->
+        <!-- Enhanced Hero Banner -->
         <section class="hero-section">
-            <div class="container">
-                <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel">
+            <div class="container-fluid px-0">
+                <div id="heroCarousel" class="carousel slide hero-carousel" data-bs-ride="carousel" data-bs-interval="5000">
                     <div class="carousel-indicators">
                         <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active"></button>
                         <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1"></button>
                         <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2"></button>
                     </div>
                     <div class="carousel-inner">
-                        <!-- Hero slides will be populated dynamically -->
+                        <div class="carousel-item active">
+                            <div class="hero-banner" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%); min-height: 500px; display: flex; align-items: center; position: relative; overflow: hidden;">
+                                <div class="hero-content container d-flex align-items-center" style="position: relative; z-index: 2;">
+                                    <div class="row w-100">
+                                        <div class="col-md-6 text-white hero-text">
+                                            <h1 class="display-4 fw-bold mb-3">Trái Cây Tươi Mỗi Ngày</h1>
+                                            <p class="lead mb-4">Chúng tôi mang đến những loại trái cây tươi ngon nhất, chất lượng cao từ các nhà vườn tin cậy.</p>
+                                            <a href="${pageContext.request.contextPath}/products" class="btn btn-light btn-lg me-3">
+                                                <i class="fas fa-shopping-bag me-2"></i>Mua Ngay
+                                            </a>
+                                        </div>
+                                        <div class="col-md-6 text-center d-none d-md-block">
+                                            <div class="hero-image" style="font-size: 150px;">
+                                                <i class="fas fa-apple-alt" style="color: rgba(255,255,255,0.2); filter: drop-shadow(0 10px 30px rgba(0,0,0,0.2));"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="hero-decoration" style="position: absolute; top: -50%; right: -10%; width: 500px; height: 500px; background: rgba(255,255,255,0.1); border-radius: 50%; z-index: 1;"></div>
+                            </div>
+                        </div>
+                        <div class="carousel-item">
+                            <div class="hero-banner" style="background: linear-gradient(135deg, #ffc107 0%, #ff8c00 100%); min-height: 500px; display: flex; align-items: center; position: relative; overflow: hidden;">
+                                <div class="hero-content container d-flex align-items-center" style="position: relative; z-index: 2;">
+                                    <div class="row w-100">
+                                        <div class="col-md-6 text-white hero-text">
+                                            <h1 class="display-4 fw-bold mb-3">Ưu Đãi Hấp Dẫn</h1>
+                                            <p class="lead mb-4">Giảm giá tới 50% cho các sản phẩm được chọn. Không bỏ lỡ cơ hội này!</p>
+                                            <a href="${pageContext.request.contextPath}/products?category=combo-tiet-kiem" class="btn btn-light btn-lg me-3">
+                                                <i class="fas fa-tags me-2"></i>Xem Ưu Đãi
+                                            </a>
+                                        </div>
+                                        <div class="col-md-6 text-center d-none d-md-block">
+                                            <div class="hero-image" style="font-size: 150px;">
+                                                <i class="fas fa-star" style="color: rgba(255,255,255,0.2); filter: drop-shadow(0 10px 30px rgba(0,0,0,0.2));"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="hero-decoration" style="position: absolute; top: -50%; right: -10%; width: 500px; height: 500px; background: rgba(255,255,255,0.1); border-radius: 50%; z-index: 1;"></div>
+                            </div>
+                        </div>
+                        <div class="carousel-item">
+                            <div class="hero-banner" style="background: linear-gradient(135deg, #dc3545 0%, #c82333 100%); min-height: 500px; display: flex; align-items: center; position: relative; overflow: hidden;">
+                                <div class="hero-content container d-flex align-items: center" style="position: relative; z-index: 2;">
+                                    <div class="row w-100">
+                                        <div class="col-md-6 text-white hero-text">
+                                            <h1 class="display-4 fw-bold mb-3">Giao Hàng Nhanh Chóng</h1>
+                                            <p class="lead mb-4">Miễn phí giao hàng cho đơn hàng từ 100.000đ. Giao hàng trong vòng 24h.</p>
+                                            <a href="${pageContext.request.contextPath}/products" class="btn btn-light btn-lg me-3">
+                                                <i class="fas fa-truck me-2"></i>Đặt Hàng
+                                            </a>
+                                        </div>
+                                        <div class="col-md-6 text-center d-none d-md-block">
+                                            <div class="hero-image" style="font-size: 150px;">
+                                                <i class="fas fa-gift" style="color: rgba(255,255,255,0.2); filter: drop-shadow(0 10px 30px rgba(0,0,0,0.2));"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="hero-decoration" style="position: absolute; top: -50%; right: -10%; width: 500px; height: 500px; background: rgba(255,255,255,0.1); border-radius: 50%; z-index: 1;"></div>
+                            </div>
+                        </div>
                     </div>
                     <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
                         <span class="carousel-control-prev-icon"></span>
@@ -75,6 +160,61 @@
                     <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
                         <span class="carousel-control-next-icon"></span>
                     </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Trust Badges Section -->
+        <section class="trust-badges-section py-4 bg-light border-bottom">
+            <div class="container">
+                <div class="row g-4 text-center">
+                    <div class="col-md-3 col-sm-6">
+                        <div class="trust-badge d-flex flex-column align-items-center">
+                            <i class="fas fa-truck text-success" style="font-size: 2.5rem; margin-bottom: 10px;"></i>
+                            <h6 class="fw-bold mb-1">Giao Hàng Nhanh</h6>
+                            <small class="text-muted">Miễn phí từ 100.000đ</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="trust-badge d-flex flex-column align-items-center">
+                            <i class="fas fa-shield-alt text-success" style="font-size: 2.5rem; margin-bottom: 10px;"></i>
+                            <h6 class="fw-bold mb-1">Thanh Toán An Toàn</h6>
+                            <small class="text-muted">100% bảo mật</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="trust-badge d-flex flex-column align-items-center">
+                            <i class="fas fa-undo text-success" style="font-size: 2.5rem; margin-bottom: 10px;"></i>
+                            <h6 class="fw-bold mb-1">Hoàn Trả Dễ Dàng</h6>
+                            <small class="text-muted">7 ngày hoàn tiền</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="trust-badge d-flex flex-column align-items-center">
+                            <i class="fas fa-headset text-success" style="font-size: 2.5rem; margin-bottom: 10px;"></i>
+                            <h6 class="fw-bold mb-1">Hỗ Trợ 24/7</h6>
+                            <small class="text-muted">Luôn sẵn sàng giúp</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Category Badges Section -->
+        <section class="category-badges-section py-5 bg-white">
+            <div class="container">
+                <h2 class="section-title">Danh Mục Sản Phẩm</h2>
+                <div class="row g-4 mb-5 justify-content-center">
+                    <c:forEach items="${categories}" var="category">
+                        <div class="col-lg-2 col-md-3 col-sm-4 col-6">
+                            <a href="${pageContext.request.contextPath}/products?categoryId=${category.categoryId}" class="category-badge text-decoration-none">
+                                <div class="category-badge-item">
+                                    <i class="category-icon ${category.icon}"></i>
+                                    <h6 class="category-name">${category.name}</h6>
+                                </div>
+                            </a>
+                        </div>
+                    </c:forEach>
                 </div>
             </div>
         </section>

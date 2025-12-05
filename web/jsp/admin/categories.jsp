@@ -5,7 +5,7 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Product Management - Admin Panel</title>
+        <title>Category Management - Admin Panel</title>
         <!-- Bootstrap CSS -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
         <!-- Font Awesome -->
@@ -17,7 +17,7 @@
         <!-- Custom CSS -->
         <link href="${pageContext.request.contextPath}/assets/css/admin.css" rel="stylesheet">
         <style>
-            .product-image {
+            .category-image {
                 width: 50px;
                 height: 50px;
                 object-fit: cover;
@@ -36,13 +36,13 @@
                 <a href="${pageContext.request.contextPath}/admin/users" class="sidebar-link">
                     <i class="fas fa-users me-2"></i> Users
                 </a>
-                <a href="${pageContext.request.contextPath}/admin/categories" class="sidebar-link">
+                <a href="${pageContext.request.contextPath}/admin/categories" class="sidebar-link active">
                     <i class="fas fa-list me-2"></i> Categories
                 </a>
                 <a href="${pageContext.request.contextPath}/admin/products" class="sidebar-link">
                     <i class="fas fa-apple-alt me-2"></i> Products
                 </a>
-                <a href="${pageContext.request.contextPath}/admin/orders" class="sidebar-link active">
+                <a href="${pageContext.request.contextPath}/admin/orders" class="sidebar-link">
                     <i class="fas fa-shopping-cart me-2"></i> Orders
                 </a>
                 <a href="${pageContext.request.contextPath}/admin/discounts" class="sidebar-link">
@@ -62,51 +62,49 @@
         <!-- Main Content -->
         <div class="main-content">
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2>Product Management</h2>
-                <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addProductModal">
-                    <i class="fas fa-plus me-2"></i>Add New Product
+                <h2>Category Management</h2>
+                <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addCategoryModal">
+                    <i class="fas fa-plus me-2"></i>Add New Category
                 </button>
             </div>
 
-            <!-- Products Table -->
+            <!-- Categories Table -->
             <div class="card">
                 <div class="card-body">
-                    <table id="productsTable" class="table table-striped">
+                    <table id="categoriesTable" class="table table-striped">
                         <thead>
                             <tr>
                                 <th>ID</th>
                                 <th>Image</th>
                                 <th>Name</th>
-                                <th>Price</th>
-                                <th>Stock</th>
-                                <th>Category</th>
-                                <th>Discount</th>
-                                <th>Status</th>
+                                <th>Slug</th>
+                                <th>Icon</th>
+                                <th>Description</th>
+                                <th>Created At</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <c:forEach items="${products}" var="product">
+                            <c:forEach items="${categories}" var="category">
                                 <tr>
-                                    <td>${product.productId}</td>
+                                    <td>${category.categoryId}</td>
                                     <td>
-                                        <img src="${pageContext.request.contextPath}${empty product.imageUrl ? '/assets/images/products/default.png' : '/' += product.imageUrl}" class="product-image" alt="${product.name}">
+                                        <img src="${pageContext.request.contextPath}${empty category.imageUrl ? '/assets/images/categories/default.png' : category.imageUrl}" class="category-image" alt="${category.name}">
                                     </td>
-                                    <td>${product.name}</td>
-                                    <td><fmt:formatNumber value="${product.price}" type="number" groupingUsed="true" maxFractionDigits="0"/>đ</td>
-                                    <td>${product.stockQuantity}</td>
-                                    <td>${product.category.name}</td>
-                                    <td>${product.discountPercent}%</td>
+                                    <td>${category.name}</td>
+                                    <td><code>${category.slug}</code></td>
                                     <td>
-                                        <span class="badge bg-${product.stockQuantity > 0 ? 'success' : 'danger'}">
-                                            ${product.stockQuantity > 0 ? 'In Stock' : 'Out of Stock'}
-                                        </span>
+                                        <c:if test="${not empty category.icon}">
+                                            <i class="${category.icon}"></i> ${category.icon}
+                                        </c:if>
                                     </td>
+                                    <td>${empty category.description ? '-' : category.description}</td>
+                                    <td><fmt:formatDate value="${category.createdAt}" pattern="dd/MM/yyyy HH:mm"/></td>
                                     <td>
-                                        <button type="button" class="btn btn-sm btn-primary edit-product" data-id="${product.productId}">
+                                        <button type="button" class="btn btn-sm btn-primary edit-category" data-id="${category.categoryId}">
                                             <i class="fas fa-edit"></i>
                                         </button>
-                                        <button type="button" class="btn btn-sm btn-danger delete-product" data-id="${product.productId}">
+                                        <button type="button" class="btn btn-sm btn-danger delete-category" data-id="${category.categoryId}">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     </td>
@@ -118,117 +116,93 @@
             </div>
         </div>
 
-        <!-- Add Product Modal -->
-        <div class="modal fade" id="addProductModal" tabindex="-1">
+        <!-- Add Category Modal -->
+        <div class="modal fade" id="addCategoryModal" tabindex="-1">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">Add New Product</h5>
+                        <h5 class="modal-title">Add New Category</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
-                        <form id="addProductForm" enctype="multipart/form-data">
+                        <form id="addCategoryForm" enctype="multipart/form-data">
                             <div class="mb-3">
-                                <label class="form-label">Product Name</label>
+                                <label class="form-label">Category Name <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control" name="name" required>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Description</label>
-                                <textarea class="form-control" name="description" rows="3" required></textarea>
+                                <textarea class="form-control" name="description" rows="3"></textarea>
                             </div>
                             <div class="mb-3">
-                                <label class="form-label">Price</label>
-                                <input type="number" class="form-control" name="price" step="0.01" required>
+                                <label class="form-label">Icon Class <span class="text-muted">(Font Awesome)</span></label>
+                                <input type="text" class="form-control" name="icon" placeholder="e.g., fas fa-apple-alt">
+                                <small class="text-muted d-block mt-2">
+                                    <i class="fas fa-info-circle"></i> 
+                                    Use Font Awesome icon classes. Examples: fas fa-apple-alt, fas fa-carrot, fas fa-lemon
+                                </small>
                             </div>
                             <div class="mb-3">
-                                <label class="form-label">Stock Quantity</label>
-                                <input type="number" class="form-control" name="stockQuantity" required>
+                                <label class="form-label">Slug</label>
+                                <input type="text" class="form-control" name="slug" placeholder="Leave empty to auto-generate">
+                                <small class="text-muted">Leave empty to auto-generate from category name</small>
                             </div>
                             <div class="mb-3">
-                                <label class="form-label">Category</label>
-                                <select class="form-select" name="categoryId" required>
-                                    <c:forEach items="${categories}" var="category">
-                                        <option value="${category.categoryId}">${category.name}</option>
-                                    </c:forEach>
-                                </select>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Discount (%)</label>
-                                <input type="number" class="form-control" name="discountPercent" min="0" max="100" value="0">
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Image</label>
+                                <label class="form-label">Category Image</label>
                                 <input type="file" class="form-control" name="image" accept="image/*" required>
                             </div>
-                            <small class="text-muted d-block mb-3">
-                                <i class="fas fa-info-circle"></i> 
-                                "New Product" badge is automatically set for products created within 7 days.<br>
-                                "Best Seller" badge is automatically set for products with total sales above 100 units.
-                            </small>
                         </form>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" form="addProductForm" class="btn btn-success">Add Product</button>
+                        <button type="submit" form="addCategoryForm" class="btn btn-success">Add Category</button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Edit Product Modal -->
-        <div class="modal fade" id="editProductModal" tabindex="-1">
+        <!-- Edit Category Modal -->
+        <div class="modal fade" id="editCategoryModal" tabindex="-1">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">Edit Product</h5>
+                        <h5 class="modal-title">Edit Category</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
-                        <form id="editProductForm" enctype="multipart/form-data">
-                            <input type="hidden" name="productId">
+                        <form id="editCategoryForm" enctype="multipart/form-data">
+                            <input type="hidden" name="categoryId">
                             <div class="mb-3">
-                                <label class="form-label">Product Name</label>
+                                <label class="form-label">Category Name <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control" name="name" required>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Description</label>
-                                <textarea class="form-control" name="description" rows="3" required></textarea>
+                                <textarea class="form-control" name="description" rows="3"></textarea>
                             </div>
                             <div class="mb-3">
-                                <label class="form-label">Price</label>
-                                <input type="number" class="form-control" name="price" step="0.01" required>
+                                <label class="form-label">Icon Class <span class="text-muted">(Font Awesome)</span></label>
+                                <input type="text" class="form-control" name="icon" placeholder="e.g., fas fa-apple-alt">
+                                <small class="text-muted d-block mt-2">
+                                    <i class="fas fa-info-circle"></i> 
+                                    Use Font Awesome icon classes. Examples: fas fa-apple-alt, fas fa-carrot, fas fa-lemon
+                                </small>
                             </div>
                             <div class="mb-3">
-                                <label class="form-label">Stock Quantity</label>
-                                <input type="number" class="form-control" name="stockQuantity" required>
+                                <label class="form-label">Slug</label>
+                                <input type="text" class="form-control" name="slug">
+                                <small class="text-muted">Leave empty to keep current slug</small>
                             </div>
                             <div class="mb-3">
-                                <label class="form-label">Category</label>
-                                <select class="form-select" name="categoryId" required>
-                                    <c:forEach items="${categories}" var="category">
-                                        <option value="${category.categoryId}">${category.name}</option>
-                                    </c:forEach>
-                                </select>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Discount (%)</label>
-                                <input type="number" class="form-control" name="discountPercent" min="0" max="100">
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Image</label>
+                                <label class="form-label">Category Image</label>
                                 <input type="file" class="form-control" name="image" accept="image/*">
                                 <small class="text-muted">Leave empty to keep current image</small>
                             </div>
-                            <small class="text-muted d-block mb-3">
-                                <i class="fas fa-info-circle"></i> 
-                                "New Product" badge is automatically set for products created within 7 days.<br>
-                                "Best Seller" badge is automatically set for products with total sales above 100 units.
-                            </small>
                         </form>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" form="editProductForm" class="btn btn-primary">Update Product</button>
+                        <button type="submit" form="editCategoryForm" class="btn btn-primary">Update Category</button>
                     </div>
                 </div>
             </div>
@@ -251,6 +225,6 @@
             const contextPath = '${pageContext.request.contextPath}';
         </script>
         
-        <script src="${pageContext.request.contextPath}/assets/js/product-management.js"></script>
+        <script src="${pageContext.request.contextPath}/assets/js/category-management.js"></script>
     </body>
 </html>
