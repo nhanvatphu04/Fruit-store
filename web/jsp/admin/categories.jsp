@@ -1,6 +1,7 @@
 <%@ page contentType="text/html" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!DOCTYPE html>
 <html>
     <head>
@@ -89,7 +90,11 @@
                                 <tr>
                                     <td>${category.categoryId}</td>
                                     <td>
-                                        <img src="${pageContext.request.contextPath}${empty category.imageUrl ? '/assets/images/categories/default.png' : category.imageUrl}" class="category-image" alt="${category.name}">
+                                        <c:set var="imgUrl" value="${category.imageUrl}" />
+                                        <c:if test="${not fn:startsWith(imgUrl, '/')}">
+                                            <c:set var="imgUrl" value="/${imgUrl}" />
+                                        </c:if>
+                                        <img src="${pageContext.request.contextPath}${empty imgUrl ? '/assets/images/categories/default.png' : imgUrl}" class="category-image" alt="${category.name}">
                                     </td>
                                     <td>${category.name}</td>
                                     <td><code>${category.slug}</code></td>

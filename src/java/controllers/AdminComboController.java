@@ -130,6 +130,7 @@ public class AdminComboController extends HttpServlet {
                 if (comboDAO.addCombo(combo)) {
                     result.put("success", true);
                     result.put("message", "Combo added successfully");
+                    result.put("comboId", combo.getComboId());
                 } else {
                     result.put("success", false);
                     result.put("message", "Failed to add combo");
@@ -204,7 +205,25 @@ public class AdminComboController extends HttpServlet {
         combo.setDescription(request.getParameter("description"));
         combo.setImageUrl(request.getParameter("imageUrl"));
         combo.setOriginalPrice(new BigDecimal(request.getParameter("originalPrice")));
-        combo.setComboPrice(new BigDecimal(request.getParameter("comboPrice")));
+        
+        // Get discount percentage and set it (which auto-calculates comboPrice)
+        int discountPercentage = 0;
+        String discountParam = request.getParameter("discountPercentage");
+        if (discountParam != null && !discountParam.isEmpty()) {
+            discountPercentage = Integer.parseInt(discountParam);
+        }
+        combo.setDiscountPercentage(discountPercentage);
+        
+        // If comboPrice is explicitly provided, use it (for backward compatibility)
+        String comboPriceParam = request.getParameter("comboPrice");
+        if (comboPriceParam != null && !comboPriceParam.isEmpty()) {
+            try {
+                combo.setComboPrice(new BigDecimal(comboPriceParam));
+            } catch (Exception e) {
+                // If comboPrice is invalid, it will use the calculated value from discountPercentage
+            }
+        }
+        
         combo.setStartDate(new Timestamp(dateFormat.parse(request.getParameter("startDate")).getTime()));
         combo.setEndDate(new Timestamp(dateFormat.parse(request.getParameter("endDate")).getTime()));
         combo.setActive(Boolean.parseBoolean(request.getParameter("isActive")));

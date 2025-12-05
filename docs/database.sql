@@ -51,6 +51,7 @@ CREATE TABLE combos (
     description TEXT,
     original_price DECIMAL(10,2),
     combo_price DECIMAL(10,2),
+    discount_percentage INT DEFAULT 0,
     image_url VARCHAR(255),
     start_date TIMESTAMP NULL DEFAULT NULL,
     end_date TIMESTAMP NULL DEFAULT NULL,
@@ -189,5 +190,3 @@ CREATE TABLE IF NOT EXISTS discount_usage (
     INDEX idx_discount_code (discount_code),
     INDEX idx_used_at (used_at)
 );
-
--- =============================

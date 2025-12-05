@@ -14,6 +14,7 @@ public class Combo {
     private Timestamp endDate;
     private boolean isActive;
     private Timestamp createdAt;
+    private int discountPercentage; // Phần trăm giảm giá (0-100)
     
     // Constructors
     public Combo() {}
@@ -57,10 +58,6 @@ public class Combo {
     
     public BigDecimal getOriginalPrice() {
         return originalPrice;
-    }
-    
-    public void setOriginalPrice(BigDecimal originalPrice) {
-        this.originalPrice = originalPrice;
     }
     
     public BigDecimal getComboPrice() {
@@ -114,9 +111,35 @@ public class Combo {
     public void setCreatedAt(Timestamp createdAt) {
         this.createdAt = createdAt;
     }
-    
-    // Tính phần trăm giảm giá
+
     public int getDiscountPercentage() {
+        return discountPercentage;
+    }
+
+    public void setDiscountPercentage(int discountPercentage) {
+        this.discountPercentage = discountPercentage;
+        // Auto-calculate combo price based on original price and discount percentage
+        if (this.originalPrice != null && discountPercentage > 0) {
+            BigDecimal discountAmount = this.originalPrice
+                    .multiply(new BigDecimal(discountPercentage))
+                    .divide(new BigDecimal("100"), java.math.RoundingMode.HALF_UP);
+            this.comboPrice = this.originalPrice.subtract(discountAmount);
+        }
+    }
+
+    public void setOriginalPrice(BigDecimal originalPrice) {
+        this.originalPrice = originalPrice;
+        // Auto-recalculate combo price when original price changes
+        if (this.discountPercentage > 0 && originalPrice != null) {
+            BigDecimal discountAmount = originalPrice
+                    .multiply(new BigDecimal(this.discountPercentage))
+                    .divide(new BigDecimal("100"), java.math.RoundingMode.HALF_UP);
+            this.comboPrice = originalPrice.subtract(discountAmount);
+        }
+    }
+    
+    // Tính phần trăm giảm giá dựa trên originalPrice và comboPrice
+    public int calculateDiscountPercentageFromPrices() {
         if (originalPrice == null || comboPrice == null || originalPrice.compareTo(BigDecimal.ZERO) <= 0) {
             return 0;
         }

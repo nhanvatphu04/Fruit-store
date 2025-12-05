@@ -131,13 +131,17 @@
                                 </div>
                             </div>
                             <div class="row mb-3">
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <label for="originalPrice" class="form-label">Original Price</label>
                                     <input type="number" step="0.01" class="form-control" id="originalPrice" name="originalPrice" required>
                                 </div>
-                                <div class="col-md-6">
-                                    <label for="comboPrice" class="form-label">Combo Price</label>
-                                    <input type="number" step="0.01" class="form-control" id="comboPrice" name="comboPrice" required>
+                                <div class="col-md-4">
+                                    <label for="discountPercentage" class="form-label">Discount (%)</label>
+                                    <input type="number" min="0" max="100" step="0.01" class="form-control" id="discountPercentage" name="discountPercentage" value="0" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="comboPrice" class="form-label">Final Price (Auto)</label>
+                                    <input type="number" step="0.01" class="form-control" id="comboPrice" name="comboPrice" readonly>
                                 </div>
                             </div>
                             <div class="row mb-3">
@@ -159,6 +163,43 @@
                                     <input class="form-check-input" type="checkbox" id="isActive" name="isActive">
                                     <label class="form-check-label" for="isActive">Active</label>
                                 </div>
+                            </div>
+                            <hr>
+                            <h6 class="mb-3">Add Products to Combo</h6>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="productSelect" class="form-label">Select Product</label>
+                                    <select class="form-select" id="productSelect">
+                                        <option value="">-- Choose a product --</option>
+                                        <c:forEach items="${products}" var="product">
+                                            <option value="${product.productId}" data-price="${product.price}">
+                                                ${product.name} - <fmt:formatNumber value="${product.price}" type="number" groupingUsed="true" maxFractionDigits="0"/>đ
+                                            </option>
+                                        </c:forEach>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="productQuantity" class="form-label">Quantity</label>
+                                    <input type="number" min="1" class="form-control" id="productQuantity" value="1">
+                                </div>
+                                <div class="col-md-2 d-flex align-items-end">
+                                    <button type="button" class="btn btn-success w-100" onclick="addProductToCombo()">Add</button>
+                                </div>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-striped table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Product</th>
+                                            <th>Price</th>
+                                            <th>Quantity</th>
+                                            <th>Subtotal</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="comboProductsTable">
+                                    </tbody>
+                                </table>
                             </div>
                         </form>
                     </div>

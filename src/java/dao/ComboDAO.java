@@ -60,19 +60,27 @@ public class ComboDAO {
 
 	// Thêm combo
 	public boolean addCombo(Combo combo) {
-		String sql = "INSERT INTO combos (name, description, original_price, combo_price, image_url, start_date, end_date, is_active) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+		String sql = "INSERT INTO combos (name, description, original_price, combo_price, discount_percentage, image_url, start_date, end_date, is_active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 		try (Connection conn = DbConnect.getInstance().getConnection();
-			 PreparedStatement ps = conn.prepareStatement(sql)) {
+			 PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 			ps.setString(1, combo.getName());
 			ps.setString(2, combo.getDescription());
 			ps.setBigDecimal(3, combo.getOriginalPrice());
 			ps.setBigDecimal(4, combo.getComboPrice());
-			ps.setString(5, combo.getImageUrl());
-			ps.setTimestamp(6, combo.getStartDate());
-			ps.setTimestamp(7, combo.getEndDate());
-			ps.setBoolean(8, combo.isActive());
+			ps.setInt(5, combo.getDiscountPercentage());
+			ps.setString(6, combo.getImageUrl());
+			ps.setTimestamp(7, combo.getStartDate());
+			ps.setTimestamp(8, combo.getEndDate());
+			ps.setBoolean(9, combo.isActive());
 			int rows = ps.executeUpdate();
-			return rows > 0;
+			if (rows > 0) {
+				try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
+					if (generatedKeys.next()) {
+						combo.setComboId(generatedKeys.getInt(1));
+					}
+				}
+				return true;
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -81,18 +89,19 @@ public class ComboDAO {
 
 	// Cập nhật combo
 	public boolean updateCombo(Combo combo) {
-		String sql = "UPDATE combos SET name=?, description=?, original_price=?, combo_price=?, image_url=?, start_date=?, end_date=?, is_active=? WHERE combo_id=?";
+		String sql = "UPDATE combos SET name=?, description=?, original_price=?, combo_price=?, discount_percentage=?, image_url=?, start_date=?, end_date=?, is_active=? WHERE combo_id=?";
 		try (Connection conn = DbConnect.getInstance().getConnection();
 			 PreparedStatement ps = conn.prepareStatement(sql)) {
 			ps.setString(1, combo.getName());
 			ps.setString(2, combo.getDescription());
 			ps.setBigDecimal(3, combo.getOriginalPrice());
 			ps.setBigDecimal(4, combo.getComboPrice());
-			ps.setString(5, combo.getImageUrl());
-			ps.setTimestamp(6, combo.getStartDate());
-			ps.setTimestamp(7, combo.getEndDate());
-			ps.setBoolean(8, combo.isActive());
-			ps.setInt(9, combo.getComboId());
+			ps.setInt(5, combo.getDiscountPercentage());
+			ps.setString(6, combo.getImageUrl());
+			ps.setTimestamp(7, combo.getStartDate());
+			ps.setTimestamp(8, combo.getEndDate());
+			ps.setBoolean(9, combo.isActive());
+			ps.setInt(10, combo.getComboId());
 			int rows = ps.executeUpdate();
 			return rows > 0;
 		} catch (Exception e) {
@@ -123,6 +132,12 @@ public class ComboDAO {
 		c.setDescription(rs.getString("description"));
 		c.setOriginalPrice(rs.getBigDecimal("original_price"));
 		c.setComboPrice(rs.getBigDecimal("combo_price"));
+		try {
+			c.setDiscountPercentage(rs.getInt("discount_percentage"));
+		} catch (SQLException e) {
+			// Handle case where discount_percentage column doesn't exist (backward compatibility)
+			c.setDiscountPercentage(0);
+		}
 		c.setImageUrl(rs.getString("image_url"));
 		c.setStartDate(rs.getTimestamp("start_date"));
 		c.setEndDate(rs.getTimestamp("end_date"));
